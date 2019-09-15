@@ -1,6 +1,7 @@
 package ui;
 
 import model.Book;
+
 import java.util.*;
 
 public class Main {
@@ -8,29 +9,33 @@ public class Main {
     private ArrayList<Book> availableBooks;
     private ArrayList<Book> loanedBooks;
 
-    public Main(){
-        availableBooks =  new ArrayList<>();
+    public Main() {
+        availableBooks = new ArrayList<>();
         loanedBooks = new ArrayList<>();
         scanner = new Scanner(System.in);
         takeUserCommand();
     }
 
-    private void takeUserCommand(){
+    public static void main(String[] args) {
+        new Main();
+    }
+
+    private void takeUserCommand() {
         sayHello();
-        while(true){
+        while (true) {
             helpMenu();
             String command = scanner.nextLine();
-            if(command.equals("q"))
+            if (command.equals("q"))
                 break;
             processCommand(command);
         }
     }
 
-    private void sayHello(){
+    private void sayHello() {
         System.out.println("Hello! This is a personal library application.");
     }
 
-    private void helpMenu(){
+    private void helpMenu() {
         System.out.println("Please enter what you would like to do:");
         System.out.println("[1] Add a book");
         System.out.println("[2] Loan a book");
@@ -38,20 +43,19 @@ public class Main {
         System.out.println("[q] Quit");
     }
 
-    private void processCommand(String command){
-        switch (command){
-            case "1":   addBook();
-                        break;
-            case "2":   loanBook();
-                        break;
-            case "3":   printAllBooks();
-                        break;
-            default:    System.out.println("You have entered an invalid command.\n");
-                        break;
+    private void processCommand(String command) {
+        if (command.equals("1")) {
+            addBook();
+        } else if (command.equals("2")) {
+            loanBook();
+        } else if (command.equals("3")) {
+            printAllBooks();
+        } else {
+            System.out.println("You have entered an invalid command.\n");
         }
     }
 
-    private void addBook(){
+    private void addBook() {
         System.out.print("Enter the book's title: ");
         String title = scanner.nextLine();
         System.out.print("Enter the book's author: ");
@@ -61,11 +65,11 @@ public class Main {
         System.out.println("You have successfully added the book.\n");
     }
 
-    private void loanBook(){
+    private void loanBook() {
         System.out.print("Enter the book's title: ");
         String title = scanner.nextLine();
-        for(Book book : availableBooks){
-            if(book.getTitle().equals(title)){
+        for (Book book : availableBooks) {
+            if (book.getTitle().equals(title)) {
                 availableBooks.remove(book);
                 book.changeAvalability();
                 loanedBooks.add(book);
@@ -76,15 +80,14 @@ public class Main {
         System.out.println("This book is not available.\n");
     }
 
-    private void printAllBooks(){
-        if(availableBooks.size()==0 && loanedBooks.size()==0){
+    private void printAllBooks() {
+        if (availableBooks.size() == 0 && loanedBooks.size() == 0) {
             System.out.println("There is no book in your library.\n");
+            return;
         }
-        for(int i=0; i<availableBooks.size(); i++)
+        for (int i = 0; i < availableBooks.size(); i++)
             System.out.println(availableBooks.get(i));
-        for(int i=0; i<loanedBooks.size(); i++)
+        for (int i = 0; i < loanedBooks.size(); i++)
             System.out.println(loanedBooks.get(i));
     }
-
-    public static void main(String[] args) { new Main(); }
 }
