@@ -29,7 +29,7 @@ public class Book {
 
     @Override
     public String toString() {
-        return ("Title: " + title + "\nAuthor(s): " + author + "\nThis book is " +
-                ((available) ? "available.\n" : "loaned.\n"));
+        return ("Title: " + title + "\nAuthor(s): " + author + "\nThis book is "
+                + ((available) ? "available.\n" : "loaned.\n"));
     }
 }
