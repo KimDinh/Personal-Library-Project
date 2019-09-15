@@ -25,8 +25,9 @@ public class Main {
         while (true) {
             helpMenu();
             String command = scanner.nextLine();
-            if (command.equals("q"))
+            if (command.equals("q")) {
                 break;
+            }
             processCommand(command);
         }
     }
@@ -85,9 +86,11 @@ public class Main {
             System.out.println("There is no book in your library.\n");
             return;
         }
-        for (int i = 0; i < availableBooks.size(); i++)
+        for (int i = 0; i < availableBooks.size(); i++) {
             System.out.println(availableBooks.get(i));
-        for (int i = 0; i < loanedBooks.size(); i++)
+        }
+        for (int i = 0; i < loanedBooks.size(); i++) {
             System.out.println(loanedBooks.get(i));
+        }
     }
 }
