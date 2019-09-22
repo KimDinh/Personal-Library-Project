@@ -1,6 +1,7 @@
 package ui;
 
 import model.Book;
+import model.Person;
 
 import java.util.*;
 
@@ -13,14 +14,14 @@ public class Main {
         availableBooks = new ArrayList<>();
         loanedBooks = new ArrayList<>();
         scanner = new Scanner(System.in);
-        takeUserCommand();
     }
 
     public static void main(String[] args) {
-        new Main();
+        Main libraryApp = new Main();
+        libraryApp.getUserCommand();
     }
 
-    private void takeUserCommand() {
+    private void getUserCommand() {
         sayHello();
         while (true) {
             helpMenu();
@@ -45,14 +46,19 @@ public class Main {
     }
 
     private void processCommand(String command) {
-        if (command.equals("1")) {
-            addBook();
-        } else if (command.equals("2")) {
-            loanBook();
-        } else if (command.equals("3")) {
-            printAllBooks();
-        } else {
-            System.out.println("You have entered an invalid command.\n");
+        switch (command) {
+            case "1":
+                addBook();
+                break;
+            case "2":
+                loanBook();
+                break;
+            case "3":
+                printAllBooks();
+                break;
+            default:
+                System.out.println("You have entered an invalid command.\n");
+                break;
         }
     }
 
@@ -72,7 +78,9 @@ public class Main {
         for (Book book : availableBooks) {
             if (book.getTitle().equals(title)) {
                 availableBooks.remove(book);
-                book.changeAvalability();
+                System.out.println("Enter the information of the borrower:\n");
+                Person borrower = getBorrowerInfo();
+                book.beLoaned(borrower);
                 loanedBooks.add(book);
                 System.out.println("The book has successfully been loaned.\n");
                 return;
@@ -86,11 +94,23 @@ public class Main {
             System.out.println("There is no book in your library.\n");
             return;
         }
-        for (int i = 0; i < availableBooks.size(); i++) {
-            System.out.println(availableBooks.get(i));
+        for (Book book : availableBooks) {
+            System.out.println(book);
         }
-        for (int i = 0; i < loanedBooks.size(); i++) {
-            System.out.println(loanedBooks.get(i));
+        for (Book book : loanedBooks) {
+            System.out.println(book);
         }
+    }
+
+    private Person getBorrowerInfo() {
+        System.out.print("Name: ");
+        String name = scanner.nextLine();
+        System.out.print("Gender: ");
+        String gender = scanner.nextLine();
+        System.out.print("Phone number: ");
+        String phoneNumber = scanner.nextLine();
+        System.out.print("Email: ");
+        String email = scanner.nextLine();
+        return new Person(name, gender, phoneNumber, email);
     }
 }
