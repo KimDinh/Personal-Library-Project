@@ -12,6 +12,7 @@ public class Book {
         this.title = title;
         this.author = author;
         this.available = true;
+        this.borrower = null;
     }
 
     // EFFECTS: return the title of this book
@@ -28,6 +29,11 @@ public class Book {
     // otherwise return false
     public boolean isAvailable() {
         return available;
+    }
+
+    // EFFECTS: return the person borrowing this book
+    public Person getBorrower() {
+        return borrower;
     }
 
     // REQUIRES: (borrower != null) and (available == true)
@@ -50,7 +56,7 @@ public class Book {
     @Override
     public String toString() {
         return ("Title: " + title
-                + "\nAuthor(s): " + author
+                + "\nAuthor: " + author
                 + "\nThis book is " + ((available) ? "available.\n" : "loaned.\n"));
     }
 }

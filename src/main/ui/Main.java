@@ -18,11 +18,12 @@ public class Main {
 
     public static void main(String[] args) {
         Main libraryApp = new Main();
+        libraryApp.sayHello();
         libraryApp.getUserCommand();
     }
 
+    // EFFECTS: get the command from user until quit
     private void getUserCommand() {
-        sayHello();
         while (true) {
             helpMenu();
             String command = scanner.nextLine();
@@ -37,6 +38,7 @@ public class Main {
         System.out.println("Hello! This is a personal library application.");
     }
 
+    // EFFECTS: print a help menu with functionality that the user can choose
     private void helpMenu() {
         System.out.println("Please enter what you would like to do:");
         System.out.println("[1] Add a book");
@@ -45,6 +47,7 @@ public class Main {
         System.out.println("[q] Quit");
     }
 
+    // EFFECTS: call the appropriate functionality corresponding to the command passed in
     private void processCommand(String command) {
         switch (command) {
             case "1":
@@ -62,6 +65,7 @@ public class Main {
         }
     }
 
+    // EFFECTS: add a new book to availableBooks
     private void addBook() {
         System.out.print("Enter the book's title: ");
         String title = scanner.nextLine();
@@ -72,13 +76,15 @@ public class Main {
         System.out.println("You have successfully added the book.\n");
     }
 
+    // EFFECTS: if the inputted title is found in a book in availableBooks,
+    // move the book from availableBooks to loanedBooks; otherwise do nothing
     private void loanBook() {
         System.out.print("Enter the book's title: ");
         String title = scanner.nextLine();
         for (Book book : availableBooks) {
             if (book.getTitle().equals(title)) {
                 availableBooks.remove(book);
-                System.out.println("Enter the information of the borrower:\n");
+                System.out.println("Enter the information of the borrower:");
                 Person borrower = getBorrowerInfo();
                 book.beLoaned(borrower);
                 loanedBooks.add(book);
@@ -89,6 +95,7 @@ public class Main {
         System.out.println("This book is not available.\n");
     }
 
+    // EFFECTS: print the information of all the books in the library
     private void printAllBooks() {
         if (availableBooks.size() == 0 && loanedBooks.size() == 0) {
             System.out.println("There is no book in your library.\n");
@@ -102,15 +109,14 @@ public class Main {
         }
     }
 
+    // EFFECTS: return a new Person with the inputted info of the borrower
     private Person getBorrowerInfo() {
         System.out.print("Name: ");
         String name = scanner.nextLine();
-        System.out.print("Gender: ");
-        String gender = scanner.nextLine();
         System.out.print("Phone number: ");
         String phoneNumber = scanner.nextLine();
         System.out.print("Email: ");
         String email = scanner.nextLine();
-        return new Person(name, gender, phoneNumber, email);
+        return new Person(name, phoneNumber, email);
     }
 }
