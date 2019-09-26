@@ -5,6 +5,10 @@ public class Person {
     private String phoneNumber;
     private String email;
 
+    public Person() {
+
+    }
+
     // REQUIRES: name must be a non-empty string
     // EFFECTS: initialize name, gender, phoneNumber, email of this person
     // to the parameters passed in

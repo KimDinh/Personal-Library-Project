@@ -6,6 +6,10 @@ public class Book {
     private boolean available;
     private Person borrower;
 
+    public Book() {
+
+    }
+
     // REQUIRES: title and author must be non-empty strings
     // EFFECTS: initialize title and author of this book to the parameter passed in
     public Book(String title, String author) {
