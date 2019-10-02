@@ -1,10 +1,18 @@
 package model;
 
-public class Book {
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
+
+public class Book implements Loadable, Saveable {
     private String title;
     private String author;
     private boolean available;
     private Person borrower;
+
+    public Book() {
+
+    }
 
     // REQUIRES: title and author must be non-empty strings
     // EFFECTS: initialize title and author of this book to the parameter passed in
@@ -58,5 +66,24 @@ public class Book {
         return ("Title: " + title
                 + "\nAuthor: " + author
                 + "\nThis book is " + ((available) ? "available.\n" : "loaned.\n"));
+    }
+
+    @Override
+    public void load(Scanner inFile) {
+        title = inFile.nextLine();
+        author = inFile.nextLine();
+        available = (inFile.nextLine().equals("1"));
+        if (!available) {
+            borrower = new Person();
+            borrower.load(inFile);
+        }
+    }
+
+    @Override
+    public void save(FileWriter outFile) throws IOException {
+        outFile.write(title + "\n" + author + "\n" + ((available) ? "1" : "0") + "\n");
+        if (!available) {
+            borrower.save(outFile);
+        }
     }
 }

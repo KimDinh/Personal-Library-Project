@@ -1,8 +1,11 @@
 package model;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
-public class Library {
+public class Library implements Loadable, Saveable {
     private ArrayList<Book> availableBooks;
     private ArrayList<Book> loanedBooks;
 
@@ -34,32 +37,22 @@ public class Library {
         availableBooks.add(newBook);
     }
 
+    // REQUIRES: book is in availableBooks
     // MODIFIES: this
-    // EFFECTS: if title matches the title of an available book, loan
-    // the book to borrower and return true; otherwise return false
-    public boolean loanBook(String title, Person borrower) {
-        Book book = findInAvailable(title);
-        if (book == null) {
-            return false;
-        }
+    // EFFECTS: loan the book to borrower
+    public void loanBook(Book book, Person borrower) {
         availableBooks.remove(book);
         loanedBooks.add(book);
         book.beLoaned(borrower);
-        return true;
     }
 
+    // REQUIRES: book is in loanedBooks
     // MODIFIES: this
-    // EFFECTS: if title matches the title of a loaned book. move the book
-    // to availableBooks and return true; otherwise return false
-    public boolean returnBook(String title) {
-        Book book = findInLoaned(title);
-        if (book == null) {
-            return false;
-        }
+    // EFFECTS: move the book to availableBooks
+    public void returnBook(Book book) {
         loanedBooks.remove(book);
         availableBooks.add(book);
         book.beReturned();
-        return true;
     }
 
     // EFFECTS: if title matches the title of an available book,
@@ -82,5 +75,42 @@ public class Library {
             }
         }
         return null;
+    }
+
+    // EFFECTS: print all of the available books
+    public void printAvailableBooks() {
+        for (Book book : availableBooks) {
+            System.out.println(book);
+        }
+    }
+
+    // EFFECTS: print all of the loaned books
+    public void printLoanedBooks() {
+        for (Book book : loanedBooks) {
+            System.out.println(book);
+        }
+    }
+
+    @Override
+    public void load(Scanner inFile) {
+        while (inFile.hasNext()) {
+            Book book = new Book();
+            book.load(inFile);
+            if (book.isAvailable()) {
+                availableBooks.add(book);
+            } else {
+                loanedBooks.add(book);
+            }
+        }
+    }
+
+    @Override
+    public void save(FileWriter outFile) throws IOException {
+        for (Book book : availableBooks) {
+            book.save(outFile);
+        }
+        for (Book book : loanedBooks) {
+            book.save(outFile);
+        }
     }
 }

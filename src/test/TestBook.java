@@ -3,16 +3,21 @@ import model.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.*;
+import java.util.Scanner;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestBook {
     private Book book;
     private Person borrower;
+    Scanner inFile;
+    FileWriter outFile;
 
     @BeforeEach
     void runBefore() {
         book = new Book("Book A", "Author A");
-        borrower = new Person("Borrower", "", "");
+        borrower = new Person("Kim", "123456789", "abcdef@gmail.com");
     }
 
     @Test
@@ -67,4 +72,55 @@ public class TestBook {
         assertEquals("Title: Book A\nAuthor: Author A\nThis book is available.\n", book.toString());
     }
 
+    @Test
+    void testLoadAvailable() throws FileNotFoundException {
+        inFile = new Scanner(new FileInputStream("src/test/testBookAvailableLoad.txt"));
+        book.load(inFile);
+        inFile.close();
+        assertTrue(book.getTitle().equals("Book A"));
+        assertTrue(book.getAuthor().equals("Author A"));
+        assertTrue(book.isAvailable());
+        assertEquals(null, book.getBorrower());
+    }
+
+    @Test
+    void testLoadLoaned() throws FileNotFoundException {
+        inFile = new Scanner(new FileInputStream("src/test/testBookLoanedLoad.txt"));
+        book.load(inFile);
+        inFile.close();
+        assertTrue(book.getTitle().equals("Book A"));
+        assertTrue(book.getAuthor().equals("Author A"));
+        assertFalse(book.isAvailable());
+        assertFalse(book.getBorrower() == null);
+    }
+
+    @Test
+    void testSaveAvailable() throws IOException {
+        outFile = new FileWriter(new File("src/test/testBookSave.txt"));
+        book.save(outFile);
+        outFile.close();
+        inFile = new Scanner(new FileInputStream("src/test/testBookSave.txt"));
+        assertTrue(inFile.nextLine().equals("Book A"));
+        assertTrue(inFile.nextLine().equals("Author A"));
+        assertTrue(inFile.nextLine().equals("1"));
+        assertFalse(inFile.hasNext());
+        inFile.close();
+    }
+
+    @Test
+    void testSaveLoaned() throws IOException {
+        outFile = new FileWriter(new File("src/test/testBookSave.txt"));
+        book.beLoaned(borrower);
+        book.save(outFile);
+        outFile.close();
+        inFile = new Scanner(new FileInputStream("src/test/testBookSave.txt"));
+        assertTrue(inFile.nextLine().equals("Book A"));
+        assertTrue(inFile.nextLine().equals("Author A"));
+        assertTrue(inFile.nextLine().equals("0"));
+        assertTrue(inFile.nextLine().equals("Kim"));
+        assertTrue(inFile.nextLine().equals("123456789"));
+        assertTrue(inFile.nextLine().equals("abcdef@gmail.com"));
+        assertFalse(inFile.hasNext());
+        inFile.close();
+    }
 }

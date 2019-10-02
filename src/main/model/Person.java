@@ -1,6 +1,10 @@
 package model;
 
-public class Person {
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
+
+public class Person implements Loadable, Saveable {
     private String name;
     private String phoneNumber;
     private String email;
@@ -58,5 +62,17 @@ public class Person {
         return ("Name: " + name
                 + "\nPhone Number: " + phoneNumber
                 + "\nEmail: " + email + "\n");
+    }
+
+    @Override
+    public void load(Scanner inFile) {
+        name = inFile.nextLine();
+        phoneNumber = inFile.nextLine();
+        email = inFile.nextLine();
+    }
+
+    @Override
+    public void save(FileWriter outFile) throws IOException {
+        outFile.write(name + "\n" + phoneNumber + "\n" + email + "\n");
     }
 }

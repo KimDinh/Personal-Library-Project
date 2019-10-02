@@ -1,0 +1,15 @@
+Book C
+Author C
+1
+Book A
+Author A
+0
+Kim Dinh
+123456789
+abcdef@gmail.com
+Book B
+Author B
+0
+Goku
+987654321
+aaaaa@gmail.com

@@ -1,25 +1,39 @@
 package ui;
 
 import model.Book;
+import model.Library;
 import model.Person;
 
+import java.io.*;
 import java.util.*;
 
 public class Main {
     private Scanner scanner;
-    private ArrayList<Book> availableBooks;
-    private ArrayList<Book> loanedBooks;
+    private Library library;
 
     public Main() {
-        availableBooks = new ArrayList<>();
-        loanedBooks = new ArrayList<>();
         scanner = new Scanner(System.in);
+        library = new Library();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Main libraryApp = new Main();
         libraryApp.sayHello();
+        libraryApp.loadFromFile();
         libraryApp.getUserCommand();
+        libraryApp.saveToFile();
+    }
+
+    private void loadFromFile() throws IOException {
+        Scanner inFile = new Scanner(new FileInputStream("library.txt"));
+        library.load(inFile);
+        inFile.close();
+    }
+
+    private void saveToFile() throws IOException {
+        FileWriter outFile = new FileWriter(new File("library.txt"));
+        library.save(outFile);
+        outFile.close();
     }
 
     // EFFECTS: get the command from user until quit
@@ -44,6 +58,7 @@ public class Main {
         System.out.println("[1] Add a book");
         System.out.println("[2] Loan a book");
         System.out.println("[3] See all the books");
+        System.out.println("[4] See a book");
         System.out.println("[q] Quit");
     }
 
@@ -59,6 +74,9 @@ public class Main {
             case "3":
                 printAllBooks();
                 break;
+            case "4":
+                findBook();
+                break;
             default:
                 System.out.println("You have entered an invalid command.\n");
                 break;
@@ -72,46 +90,65 @@ public class Main {
         System.out.print("Enter the book's author: ");
         String author = scanner.nextLine();
         Book newBook = new Book(title, author);
-        availableBooks.add(newBook);
+        library.addBook(newBook);
         System.out.println("You have successfully added the book.\n");
     }
 
-    // EFFECTS: if the inputted title is found in a book in availableBooks,
-    // move the book from availableBooks to loanedBooks; otherwise do nothing
+    // EFFECTS: if the inputted title matches the title of an available book,
+    // get the borrower's info and loan the book; otherwise do nothing
     private void loanBook() {
         System.out.print("Enter the book's title: ");
         String title = scanner.nextLine();
-        for (Book book : availableBooks) {
-            if (book.getTitle().equals(title)) {
-                availableBooks.remove(book);
-                System.out.println("Enter the information of the borrower:");
-                Person borrower = getBorrowerInfo();
-                book.beLoaned(borrower);
-                loanedBooks.add(book);
-                System.out.println("The book has successfully been loaned.\n");
-                return;
-            }
+        Book book = library.findInAvailable(title);
+        if (book == null) {
+            System.out.println("This book is not available.\n");
+            return;
         }
-        System.out.println("This book is not available.\n");
+        Person borrower = getBorrowerInfo();
+        library.loanBook(book, borrower);
+        System.out.println("The book has successfully been loaned.\n");
     }
 
     // EFFECTS: print the information of all the books in the library
     private void printAllBooks() {
-        if (availableBooks.size() == 0 && loanedBooks.size() == 0) {
+        if (library.numOfBooks() == 0) {
             System.out.println("There is no book in your library.\n");
             return;
         }
-        for (Book book : availableBooks) {
-            System.out.println(book);
+        library.printAvailableBooks();
+        library.printLoanedBooks();
+    }
+
+    // EFFECTS: print all the books whose titles matches the inputted title
+    private void findBook() {
+        System.out.println("Enter the book's title: ");
+        String title = scanner.nextLine();
+        Book bookAvailable = library.findInAvailable(title);
+        Book bookLoaned = library.findInLoaned(title);
+        if (bookAvailable == null && bookLoaned == null) {
+            System.out.println("This book is not in the library.\n");
+        } else if (bookAvailable != null) {
+            printBook(bookAvailable);
+        } else {
+            printBook(bookLoaned);
         }
-        for (Book book : loanedBooks) {
-            System.out.println(book);
+    }
+
+    private void printBook(Book book) {
+        System.out.println(book);
+        if (!book.isAvailable()) {
+            System.out.println("Press [1] to see borrower's info.");
+            System.out.println("Press any other key to return.");
+            String command = scanner.nextLine();
+            if (command.equals(("1"))) {
+                System.out.println(book.getBorrower());
+            }
         }
     }
 
     // EFFECTS: return a new Person with the inputted info of the borrower
     private Person getBorrowerInfo() {
-        System.out.print("Name: ");
+        System.out.print("Enter the information of the borrower:\nName: ");
         String name = scanner.nextLine();
         System.out.print("Phone number: ");
         String phoneNumber = scanner.nextLine();
