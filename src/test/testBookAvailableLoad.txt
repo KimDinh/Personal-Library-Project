@@ -1,3 +1,6 @@
 Book A
 Author A
 1
+Book B
+Author B
+1

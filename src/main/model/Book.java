@@ -4,11 +4,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class Book implements Loadable, Saveable {
-    private String title;
-    private String author;
-    private boolean available;
-    private Person borrower;
+public abstract class Book implements Loadable, Saveable {
+    protected String title;
+    protected String author;
+    protected boolean available;
+    protected Person borrower;
 
     public Book() {
 
@@ -62,11 +62,7 @@ public class Book implements Loadable, Saveable {
 
     // EFFECTS: return a String that displays the information of this book
     @Override
-    public String toString() {
-        return ("Title: " + title
-                + "\nAuthor: " + author
-                + "\nThis book is " + ((available) ? "available.\n" : "loaned.\n"));
-    }
+    public abstract String toString();
 
     @Override
     public void load(Scanner inFile) {

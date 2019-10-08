@@ -94,7 +94,12 @@ public class Library implements Loadable, Saveable {
     @Override
     public void load(Scanner inFile) {
         while (inFile.hasNext()) {
-            Book book = new Book();
+            Book book;
+            if (inFile.nextLine().equals("1")) {
+                book = new RareBook();
+            } else {
+                book = new RegularBook();
+            }
             book.load(inFile);
             if (book.isAvailable()) {
                 availableBooks.add(book);

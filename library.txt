@@ -1,15 +1,15 @@
+0
+Book A
+Author A
+1
+1
 Book C
 Author C
 1
-Book A
-Author A
-0
-Kim Dinh
-123456789
-abcdef@gmail.com
+1
 Book B
 Author B
 0
-Goku
-987654321
-aaaaa@gmail.com
+Kim
+123456789
+abcdef@gmail.com

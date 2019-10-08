@@ -1,6 +1,0 @@
-Book A
-Author A
-0
-Kim
-123456789
-abcdef@gmail.com

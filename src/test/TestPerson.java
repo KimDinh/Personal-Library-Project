@@ -57,25 +57,23 @@ public class TestPerson {
     }
 
     @Test
-    void testLoad() throws FileNotFoundException {
+    void testLoadAndSave() throws IOException {
         inFile = new Scanner(new FileInputStream("src/test/testPersonLoad.txt"));
         person.load(inFile);
         inFile.close();
         assertTrue(person.getName().equals("Kim"));
         assertTrue(person.getPhoneNumber().equals("123456789"));
         assertTrue(person.getEmail().equals("abcdef@gmail.com"));
-    }
 
-    @Test
-    void testSave() throws IOException {
-        outFile = new FileWriter(new File("src/test/testPersonSave.txt"));
+        outFile = new FileWriter(new File("src/test/testSave.txt"));
         person.save(outFile);
         outFile.close();
-        inFile = new Scanner(new FileInputStream("src/test/testPersonSave.txt"));
+        inFile = new Scanner(new FileInputStream("src/test/testSave.txt"));
         assertTrue(inFile.nextLine().equals("Kim"));
         assertTrue(inFile.nextLine().equals("123456789"));
         assertTrue(inFile.nextLine().equals("abcdef@gmail.com"));
         assertFalse(inFile.hasNext());
         inFile.close();
     }
+
 }

@@ -1,5 +1,7 @@
+0
 Book A
 Author A
+1
 1
 Book B
 Author B
@@ -7,6 +9,7 @@ Author B
 Kim
 123456789
 abcdef@gmail.com
+1
 Book C
 Author C
 0

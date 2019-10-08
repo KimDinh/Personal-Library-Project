@@ -1,8 +1,6 @@
 package ui;
 
-import model.Book;
-import model.Library;
-import model.Person;
+import model.*;
 
 import java.io.*;
 import java.util.*;
@@ -89,7 +87,14 @@ public class Main {
         String title = scanner.nextLine();
         System.out.print("Enter the book's author: ");
         String author = scanner.nextLine();
-        Book newBook = new Book(title, author);
+        System.out.print("Is it a rare book? Press 'y' for yes. Press any other key for no. ");
+        String rare = scanner.nextLine();
+        Book newBook;
+        if (rare.toLowerCase().equals("y")) {
+            newBook = new RareBook(title, author);
+        } else {
+            newBook = new RegularBook(title, author);
+        }
         library.addBook(newBook);
         System.out.println("You have successfully added the book.\n");
     }

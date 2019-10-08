@@ -1,5 +1,7 @@
 import model.Book;
 import model.Person;
+import model.RareBook;
+import model.RegularBook;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -9,118 +11,143 @@ import java.util.Scanner;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestBook {
-    private Book book;
+    private Book regularBookA;
+    private Book rareBookB;
     private Person borrower;
     Scanner inFile;
     FileWriter outFile;
 
     @BeforeEach
     void runBefore() {
-        book = new Book("Book A", "Author A");
+        regularBookA = new RegularBook("Book A", "Author A");
+        rareBookB = new RareBook("Book B", "Author B");
         borrower = new Person("Kim", "123456789", "abcdef@gmail.com");
     }
 
     @Test
     void testGetTitle() {
-        assertEquals("Book A", book.getTitle());
+        assertEquals("Book A", regularBookA.getTitle());
     }
 
     @Test
     void testGetAuthor() {
-        assertEquals("Author A", book.getAuthor());
+        assertEquals("Author A", regularBookA.getAuthor());
     }
 
     @Test
     void testIsAvailable() {
-        assertTrue(book.isAvailable());
-        book.beLoaned(borrower);
-        assertFalse(book.isAvailable());
-        book.beReturned();
-        assertTrue(book.isAvailable());
+        assertTrue(regularBookA.isAvailable());
+        regularBookA.beLoaned(borrower);
+        assertFalse(regularBookA.isAvailable());
+        regularBookA.beReturned();
+        assertTrue(regularBookA.isAvailable());
     }
 
     @Test
     void testGetBorrower() {
-        assertEquals(null, book.getBorrower());
-        book.beLoaned(borrower);
-        assertEquals(borrower, book.getBorrower());
-        book.beReturned();
-        assertEquals(null, book.getBorrower());
+        assertEquals(null, regularBookA.getBorrower());
+        regularBookA.beLoaned(borrower);
+        assertEquals(borrower, regularBookA.getBorrower());
+        regularBookA.beReturned();
+        assertEquals(null, regularBookA.getBorrower());
     }
 
     @Test
     void testBeLoaned() {
-        book.beLoaned(borrower);
-        assertEquals(borrower, book.getBorrower());
-        assertFalse(book.isAvailable());
+        regularBookA.beLoaned(borrower);
+        assertEquals(borrower, regularBookA.getBorrower());
+        assertFalse(regularBookA.isAvailable());
     }
 
     @Test
     void testBeReturned() {
-        book.beLoaned(borrower);
-        book.beReturned();
-        assertEquals(null, book.getBorrower());
-        assertTrue(book.isAvailable());
+        regularBookA.beLoaned(borrower);
+        regularBookA.beReturned();
+        assertEquals(null, regularBookA.getBorrower());
+        assertTrue(regularBookA.isAvailable());
     }
 
     @Test
-    void testToString() {
-        assertEquals("Title: Book A\nAuthor: Author A\nThis book is available.\n", book.toString());
-        book.beLoaned(borrower);
-        assertEquals("Title: Book A\nAuthor: Author A\nThis book is loaned.\n", book.toString());
-        book.beReturned();
-        assertEquals("Title: Book A\nAuthor: Author A\nThis book is available.\n", book.toString());
+    void testToStringRegular() {
+        assertEquals("Title: Book A\nAuthor: Author A\nThis book is available.\n", regularBookA.toString());
+        regularBookA.beLoaned(borrower);
+        assertEquals("Title: Book A\nAuthor: Author A\nThis book is loaned.\n", regularBookA.toString());
+        regularBookA.beReturned();
+        assertEquals("Title: Book A\nAuthor: Author A\nThis book is available.\n", regularBookA.toString());
     }
 
     @Test
-    void testLoadAvailable() throws FileNotFoundException {
+    void testToStringRare() {
+        assertEquals("Title: Book B\nAuthor: Author B\n" +
+                "This is a rare book.\nThis book is available.\n", rareBookB.toString());
+        rareBookB.beLoaned(borrower);
+        assertEquals("Title: Book B\nAuthor: Author B\n" +
+                "This is a rare book.\nThis book is loaned.\n", rareBookB.toString());
+        rareBookB.beReturned();
+        assertEquals("Title: Book B\nAuthor: Author B\n" +
+                "This is a rare book.\nThis book is available.\n", rareBookB.toString());
+    }
+
+    @Test
+    void testLoadAndSaveAvailable() throws IOException {
         inFile = new Scanner(new FileInputStream("src/test/testBookAvailableLoad.txt"));
-        book.load(inFile);
+        regularBookA.load(inFile);
+        rareBookB.load(inFile);
         inFile.close();
-        assertTrue(book.getTitle().equals("Book A"));
-        assertTrue(book.getAuthor().equals("Author A"));
-        assertTrue(book.isAvailable());
-        assertEquals(null, book.getBorrower());
-    }
+        assertTrue(regularBookA.getTitle().equals("Book A"));
+        assertTrue(regularBookA.getAuthor().equals("Author A"));
+        assertTrue(regularBookA.isAvailable());
+        assertEquals(null, regularBookA.getBorrower());
 
-    @Test
-    void testLoadLoaned() throws FileNotFoundException {
-        inFile = new Scanner(new FileInputStream("src/test/testBookLoanedLoad.txt"));
-        book.load(inFile);
-        inFile.close();
-        assertTrue(book.getTitle().equals("Book A"));
-        assertTrue(book.getAuthor().equals("Author A"));
-        assertFalse(book.isAvailable());
-        assertFalse(book.getBorrower() == null);
-    }
-
-    @Test
-    void testSaveAvailable() throws IOException {
-        outFile = new FileWriter(new File("src/test/testBookSave.txt"));
-        book.save(outFile);
+        outFile = new FileWriter(new File("src/test/testSave.txt"));
+        regularBookA.save(outFile);
+        rareBookB.save(outFile);
         outFile.close();
-        inFile = new Scanner(new FileInputStream("src/test/testBookSave.txt"));
+        inFile = new Scanner(new FileInputStream("src/test/testSave.txt"));
+        assertTrue(inFile.nextLine().equals("0"));
         assertTrue(inFile.nextLine().equals("Book A"));
         assertTrue(inFile.nextLine().equals("Author A"));
+        assertTrue(inFile.nextLine().equals("1"));
+        assertTrue(inFile.nextLine().equals("1"));
+        assertTrue(inFile.nextLine().equals("Book B"));
+        assertTrue(inFile.nextLine().equals("Author B"));
         assertTrue(inFile.nextLine().equals("1"));
         assertFalse(inFile.hasNext());
         inFile.close();
     }
 
     @Test
-    void testSaveLoaned() throws IOException {
-        outFile = new FileWriter(new File("src/test/testBookSave.txt"));
-        book.beLoaned(borrower);
-        book.save(outFile);
+    void testLoadAndSaveLoaned() throws IOException {
+        inFile = new Scanner(new FileInputStream("src/test/testBookLoanedLoad.txt"));
+        regularBookA.load(inFile);
+        rareBookB.load(inFile);
+        inFile.close();
+        assertTrue(regularBookA.getTitle().equals("Book A"));
+        assertTrue(regularBookA.getAuthor().equals("Author A"));
+        assertFalse(regularBookA.isAvailable());
+        assertFalse(regularBookA.getBorrower() == null);
+
+        outFile = new FileWriter(new File("src/test/testSave.txt"));
+        regularBookA.save(outFile);
+        rareBookB.save(outFile);
         outFile.close();
-        inFile = new Scanner(new FileInputStream("src/test/testBookSave.txt"));
+        inFile = new Scanner(new FileInputStream("src/test/testSave.txt"));
+        assertTrue(inFile.nextLine().equals("0"));
         assertTrue(inFile.nextLine().equals("Book A"));
         assertTrue(inFile.nextLine().equals("Author A"));
         assertTrue(inFile.nextLine().equals("0"));
         assertTrue(inFile.nextLine().equals("Kim"));
         assertTrue(inFile.nextLine().equals("123456789"));
         assertTrue(inFile.nextLine().equals("abcdef@gmail.com"));
+        assertTrue(inFile.nextLine().equals("1"));
+        assertTrue(inFile.nextLine().equals("Book B"));
+        assertTrue(inFile.nextLine().equals("Author B"));
+        assertTrue(inFile.nextLine().equals("0"));
+        assertTrue(inFile.nextLine().equals("Goku"));
+        assertTrue(inFile.nextLine().equals("987654321"));
+        assertTrue(inFile.nextLine().equals("aaaaaa@gmail.com"));
         assertFalse(inFile.hasNext());
         inFile.close();
     }
+
 }
