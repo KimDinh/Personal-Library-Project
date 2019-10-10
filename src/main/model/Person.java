@@ -4,14 +4,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class Person implements Loadable, Saveable {
-    private String name;
-    private String phoneNumber;
-    private String email;
+public abstract class Person implements Loadable, Saveable {
+    protected String name;
+    protected String phoneNumber;
+    protected String email;
 
-    public Person() {
-
-    }
+    public Person() {}
 
     // REQUIRES: name must be a non-empty string
     // EFFECTS: initialize name, gender, phoneNumber, email of this person

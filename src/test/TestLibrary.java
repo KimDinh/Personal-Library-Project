@@ -20,7 +20,7 @@ public class TestLibrary {
         library = new Library();
         regularBookA = new RegularBook("Book A", "Author A");
         rareBookB = new RareBook("Book B", "Author B");
-        borrower = new Person("Kim", "123456789", "abcdef@gmail.com");
+        borrower = new RegularPerson("Kim", "123456789", "abcdef@gmail.com");
     }
 
     @Test
@@ -116,6 +116,7 @@ public class TestLibrary {
         assertTrue(inFile.nextLine().equals("Book B"));
         assertTrue(inFile.nextLine().equals("Author B"));
         assertTrue(inFile.nextLine().equals("0"));
+        assertTrue(inFile.nextLine().equals("0"));
         assertTrue(inFile.nextLine().equals("Kim"));
         assertTrue(inFile.nextLine().equals("123456789"));
         assertTrue(inFile.nextLine().equals("abcdef@gmail.com"));
@@ -123,6 +124,7 @@ public class TestLibrary {
         assertTrue(inFile.nextLine().equals("Book C"));
         assertTrue(inFile.nextLine().equals("Author C"));
         assertTrue(inFile.nextLine().equals("0"));
+        assertTrue(inFile.nextLine().equals("1"));
         assertTrue(inFile.nextLine().equals("Goku"));
         assertTrue(inFile.nextLine().equals("987654321"));
         assertTrue(inFile.nextLine().equals("aaaaaa@gmail.com"));

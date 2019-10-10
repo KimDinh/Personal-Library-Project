@@ -7,9 +7,7 @@ public class RegularBook extends Book {
     private static final int MAXIMUM_LOAN_DAYS_FOR_REGULAR_PERSON = 7;
     private static final int MAXIMUM_LOAN_DAYS_FOR_FRIEND = 10;
 
-    public RegularBook() {
-
-    }
+    public RegularBook() {}
 
     public RegularBook(String title, String author) {
         super(title, author);

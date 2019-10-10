@@ -1,7 +1,4 @@
-import model.Book;
-import model.Person;
-import model.RareBook;
-import model.RegularBook;
+import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +18,7 @@ public class TestBook {
     void runBefore() {
         regularBookA = new RegularBook("Book A", "Author A");
         rareBookB = new RareBook("Book B", "Author B");
-        borrower = new Person("Kim", "123456789", "abcdef@gmail.com");
+        borrower = new RegularPerson("Kim", "123456789", "abcdef@gmail.com");
     }
 
     @Test
@@ -136,6 +133,7 @@ public class TestBook {
         assertTrue(inFile.nextLine().equals("Book A"));
         assertTrue(inFile.nextLine().equals("Author A"));
         assertTrue(inFile.nextLine().equals("0"));
+        assertTrue(inFile.nextLine().equals("0"));
         assertTrue(inFile.nextLine().equals("Kim"));
         assertTrue(inFile.nextLine().equals("123456789"));
         assertTrue(inFile.nextLine().equals("abcdef@gmail.com"));
@@ -143,6 +141,7 @@ public class TestBook {
         assertTrue(inFile.nextLine().equals("Book B"));
         assertTrue(inFile.nextLine().equals("Author B"));
         assertTrue(inFile.nextLine().equals("0"));
+        assertTrue(inFile.nextLine().equals("1"));
         assertTrue(inFile.nextLine().equals("Goku"));
         assertTrue(inFile.nextLine().equals("987654321"));
         assertTrue(inFile.nextLine().equals("aaaaaa@gmail.com"));

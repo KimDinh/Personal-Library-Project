@@ -10,9 +10,7 @@ public abstract class Book implements Loadable, Saveable {
     protected boolean available;
     protected Person borrower;
 
-    public Book() {
-
-    }
+    public Book() {}
 
     // REQUIRES: title and author must be non-empty strings
     // EFFECTS: initialize title and author of this book to the parameter passed in
@@ -70,7 +68,11 @@ public abstract class Book implements Loadable, Saveable {
         author = inFile.nextLine();
         available = (inFile.nextLine().equals("1"));
         if (!available) {
-            borrower = new Person();
+            if (inFile.nextLine().equals("1")) {
+                borrower = new Friend();
+            } else {
+                borrower = new RegularPerson();
+            }
             borrower.load(inFile);
         }
     }

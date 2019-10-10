@@ -88,9 +88,8 @@ public class Main {
         System.out.print("Enter the book's author: ");
         String author = scanner.nextLine();
         System.out.print("Is it a rare book? Press 'y' for yes. Press any other key for no. ");
-        String rare = scanner.nextLine();
         Book newBook;
-        if (rare.toLowerCase().equals("y")) {
+        if (scanner.nextLine().equals("y")) {
             newBook = new RareBook(title, author);
         } else {
             newBook = new RegularBook(title, author);
@@ -126,7 +125,7 @@ public class Main {
 
     // EFFECTS: print all the books whose titles matches the inputted title
     private void findBook() {
-        System.out.println("Enter the book's title: ");
+        System.out.print("Enter the book's title: ");
         String title = scanner.nextLine();
         Book bookAvailable = library.findInAvailable(title);
         Book bookLoaned = library.findInLoaned(title);
@@ -159,6 +158,11 @@ public class Main {
         String phoneNumber = scanner.nextLine();
         System.out.print("Email: ");
         String email = scanner.nextLine();
-        return new Person(name, phoneNumber, email);
+        System.out.println("Is this person a friend? Press 'y' for yes. Press any other key for no. ");
+        if (scanner.nextLine().toLowerCase().equals("y")) {
+            return new Friend(name, phoneNumber, email);
+        } else {
+            return new RegularPerson(name, phoneNumber, email);
+        }
     }
 }

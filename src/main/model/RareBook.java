@@ -6,9 +6,7 @@ import java.io.IOException;
 public class RareBook extends Book {
     private static final int MAXIMUM_LOAN_DAYS = 4;
 
-    public RareBook() {
-
-    }
+    public RareBook() {}
 
     public RareBook(String title, String author) {
         super(title, author);
