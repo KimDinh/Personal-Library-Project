@@ -1,3 +1,4 @@
+import exceptions.EmptyStringException;
 import model.Friend;
 import model.Person;
 import model.RegularPerson;
@@ -16,9 +17,34 @@ public class TestPerson {
     FileWriter outFile;
 
     @BeforeEach
-    void runBefore() {
+    void runBefore() throws EmptyStringException {
         regularPerson = new RegularPerson("Kim", "123456789", "abcdef@gmail.com");
         friend = new Friend("Goku", "987654321", "aaaaaa@gmail.com");
+    }
+
+    @Test
+    void testPersonExpectEmptyStringException() {
+        try {
+            Person person = new RegularPerson("", "123456789", "abcdef@gmail.com");
+            fail();
+        } catch (EmptyStringException e) {}
+        try {
+            Person person = new RegularPerson("Kim", "", "abcdef@gmail.com");
+            fail();
+        } catch (EmptyStringException e) {}
+        try {
+            Person person = new RegularPerson("Kim", "123456789", "");
+            fail();
+        } catch (EmptyStringException e) {}
+    }
+
+    @Test
+    void testPersonNothingThrown() {
+        try {
+            Person person = new RegularPerson("Kim", "123456789", "abcdef@gmail.com");
+        } catch (EmptyStringException e) {
+            fail();
+        }
     }
 
     @Test
@@ -37,21 +63,60 @@ public class TestPerson {
     }
 
     @Test
-    void testUpdateName() {
-        regularPerson.updateName("Goku");
+    void testUpdateNameNothingThrown() {
+        try {
+            regularPerson.updateName("Goku");
+        } catch (EmptyStringException e) {
+            fail();
+        }
         assertEquals("Goku", regularPerson.getName());
     }
 
     @Test
-    void testUpdatePhoneNumber() {
-        regularPerson.updatePhoneNumber("987654321");
+    void testUpdateNameExpectEmptyStringException() {
+        try {
+            regularPerson.updateName("");
+            fail();
+        } catch (EmptyStringException e) {}
+        assertEquals("Kim", regularPerson.getName());
+    }
+
+    @Test
+    void testUpdatePhoneNumberNothingThrown() {
+        try {
+            regularPerson.updatePhoneNumber("987654321");
+        } catch (EmptyStringException e) {
+            fail();
+        }
         assertEquals("987654321", regularPerson.getPhoneNumber());
     }
 
     @Test
-    void testUpdateEmail() {
-        regularPerson.updateEmail("aaaaaa@gmail.com");
+    void testUpdatePhoneNumberExpectEmptyStringException() {
+        try {
+            regularPerson.updatePhoneNumber("");
+            fail();
+        } catch (EmptyStringException e) {}
+        assertEquals("123456789", regularPerson.getPhoneNumber());
+    }
+
+    @Test
+    void testUpdateEmailNothingThrown() {
+        try {
+            regularPerson.updateEmail("aaaaaa@gmail.com");
+        } catch (EmptyStringException e) {
+            fail();
+        }
         assertEquals("aaaaaa@gmail.com", regularPerson.getEmail());
+    }
+
+    @Test
+    void testUpdateEmailExpectEmptyStringException() {
+        try {
+            regularPerson.updateEmail("");
+            fail();
+        } catch (EmptyStringException e) {}
+        assertEquals("abcdef@gmail.com", regularPerson.getEmail());
     }
 
     @Test
@@ -64,7 +129,7 @@ public class TestPerson {
 
     @Test
     void testLoadAndSave() throws IOException {
-        inFile = new Scanner(new FileInputStream("src/test/testPersonLoad.txt"));
+        inFile = new Scanner(new FileInputStream("data/testPersonLoad.txt"));
         regularPerson = new RegularPerson();
         friend = new Friend();
         regularPerson.load(inFile);
@@ -74,11 +139,11 @@ public class TestPerson {
         assertTrue(regularPerson.getPhoneNumber().equals("123456789"));
         assertTrue(regularPerson.getEmail().equals("abcdef@gmail.com"));
 
-        outFile = new FileWriter(new File("src/test/testSave.txt"));
+        outFile = new FileWriter(new File("data/testSave.txt"));
         regularPerson.save(outFile);
         friend.save(outFile);
         outFile.close();
-        inFile = new Scanner(new FileInputStream("src/test/testSave.txt"));
+        inFile = new Scanner(new FileInputStream("data/testSave.txt"));
         assertTrue(inFile.nextLine().equals("0"));
         assertTrue(inFile.nextLine().equals("Kim"));
         assertTrue(inFile.nextLine().equals("123456789"));

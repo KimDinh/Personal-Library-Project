@@ -1,3 +1,7 @@
+import exceptions.BookNotAvailableException;
+import exceptions.EmptyStringException;
+import exceptions.NullBookException;
+import exceptions.NullPersonException;
 import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +20,7 @@ public class TestLibrary {
     FileWriter outFile;
 
     @BeforeEach
-    void runBefore() {
+    void runBefore() throws EmptyStringException {
         library = new Library();
         regularBookA = new RegularBook("Book A", "Author A");
         rareBookB = new RareBook("Book B", "Author B");
@@ -24,45 +28,102 @@ public class TestLibrary {
     }
 
     @Test
-    void testAddBook() {
+    void testAddBookNothingThrown() {
         assertEquals(0, library.numOfAvailable());
         assertEquals(0, library.numOfBooks());
-        library.addBook(regularBookA);
+        try {
+            library.addBook(regularBookA);
+        } catch (NullBookException e) {
+            fail();
+        }
         assertEquals(1, library.numOfAvailable());
         assertEquals(1, library.numOfBooks());
         assertEquals(regularBookA, library.findInAvailable("Book A"));
-        library.addBook(rareBookB);
+        try {
+            library.addBook(rareBookB);
+        } catch (NullBookException e) {
+            fail();
+        }
         assertEquals(2, library.numOfAvailable());
         assertEquals(2, library.numOfBooks());
         assertEquals(rareBookB, library.findInAvailable("Book B"));
     }
 
     @Test
-    void testLoanBook() {
+    void testAddBookExpectNullBookException() {
+        try {
+            library.addBook(null);
+            fail();
+        } catch (NullBookException e) {}
+    }
+
+    @Test
+    void testLoanBookNothingThrown() throws NullBookException {
         library.addBook(regularBookA);
         assertEquals(1, library.numOfBooks());
         assertEquals(1, library.numOfAvailable());
         assertEquals(0, library.numOfLoaned());
-        library.loanBook(regularBookA, borrower);
+        try {
+            library.loanBook("Book A", borrower);
+        } catch (BookNotAvailableException e) {
+            fail();
+        } catch (NullPersonException e) {
+            fail();
+        }
         assertEquals(0, library.numOfAvailable());
         assertEquals(1, library.numOfLoaned());
         assertEquals(regularBookA, library.findInLoaned("Book A"));
     }
 
     @Test
-    void testReturnBook() {
+    void testLoanBookExpectBookNotAvailableException() {
+        try {
+            library.loanBook("Book A", borrower);
+            fail();
+        } catch (BookNotAvailableException e) {
+        } catch (NullPersonException e) {
+            fail();
+        }
+    }
+
+    @Test
+    void testLoanBookExpectNullPersonException() throws NullBookException {
         library.addBook(regularBookA);
-        library.loanBook(regularBookA, borrower);
+        try {
+            library.loanBook("Book A", null);
+            fail();
+        } catch (BookNotAvailableException e) {
+            fail();
+        } catch (NullPersonException e) {}
+        assertEquals(regularBookA, library.findInAvailable("Book A"));
+    }
+
+    @Test
+    void testReturnBookNothingThrown() throws NullPersonException, BookNotAvailableException, NullBookException {
+        library.addBook(regularBookA);
+        library.loanBook("Book A", borrower);
         assertEquals(1, library.numOfBooks());
         assertEquals(1, library.numOfLoaned());
-        library.returnBook(regularBookA);
+        try{
+            library.returnBook("Book A");
+        } catch (BookNotAvailableException e) {
+            fail();
+        }
         assertEquals(0, library.numOfLoaned());
         assertEquals(1, library.numOfAvailable());
         assertEquals(regularBookA, library.findInAvailable("Book A"));
     }
 
     @Test
-    void testFindInAvailable() {
+    void testReturnBookExpectBookNotAvailableException() {
+        try {
+            library.returnBook("Book A");
+            fail();
+        } catch (BookNotAvailableException e) {}
+    }
+
+    @Test
+    void testFindInAvailable() throws NullBookException {
         assertEquals(null ,library.findInAvailable("Book A"));
         library.addBook(regularBookA);
         assertEquals(regularBookA, library.findInAvailable("Book A"));
@@ -70,44 +131,44 @@ public class TestLibrary {
     }
 
     @Test
-    void testFindInLoaned() {
+    void testFindInLoaned() throws NullPersonException, BookNotAvailableException, NullBookException {
         assertEquals(null, library.findInLoaned("Book A"));
         library.addBook(regularBookA);
-        library.loanBook(regularBookA, borrower);
+        library.loanBook("Book A", borrower);
         assertEquals(regularBookA, library.findInLoaned("Book A"));
         assertEquals(null, library.findInLoaned("Book B"));
     }
 
     @Test
     void testLoadAndSaveEmpty() throws IOException {
-        inFile = new Scanner(new FileInputStream("src/test/testLibraryLoadEmpty.txt"));
+        inFile = new Scanner(new FileInputStream("data/testLibraryLoadEmpty.txt"));
         library.load(inFile);
         inFile.close();
         assertEquals(0, library.numOfBooks());
         assertEquals(0, library.numOfAvailable());
         assertEquals(0, library.numOfLoaned());
 
-        outFile = new FileWriter(new File("src/test/testSave.txt"));
+        outFile = new FileWriter(new File("data/testSave.txt"));
         library.save(outFile);
         outFile.close();
-        inFile = new Scanner(new FileInputStream("src/test/testSave.txt"));
+        inFile = new Scanner(new FileInputStream("data/testSave.txt"));
         assertFalse(inFile.hasNext());
         inFile.close();
     }
 
     @Test
     void testLoadAndSaveMany() throws IOException {
-        inFile = new Scanner(new FileInputStream("src/test/testLibraryLoadMany.txt"));
+        inFile = new Scanner(new FileInputStream("data/testLibraryLoadMany.txt"));
         library.load(inFile);
         inFile.close();
         assertEquals(3, library.numOfBooks());
         assertEquals(1, library.numOfAvailable());
         assertEquals(2, library.numOfLoaned());
 
-        outFile = new FileWriter(new File("src/test/testSave.txt"));
+        outFile = new FileWriter(new File("data/testSave.txt"));
         library.save(outFile);
         outFile.close();
-        inFile = new Scanner(new FileInputStream("src/test/testSave.txt"));
+        inFile = new Scanner(new FileInputStream("data/testSave.txt"));
         assertTrue(inFile.nextLine().equals("0"));
         assertTrue(inFile.nextLine().equals("Book A"));
         assertTrue(inFile.nextLine().equals("Author A"));

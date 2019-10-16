@@ -1,5 +1,9 @@
 package model;
 
+import exceptions.BookNotAvailableException;
+import exceptions.EmptyStringException;
+import exceptions.NullPersonException;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
@@ -12,9 +16,11 @@ public abstract class Book implements Loadable, Saveable {
 
     public Book() {}
 
-    // REQUIRES: title and author must be non-empty strings
     // EFFECTS: initialize title and author of this book to the parameter passed in
-    public Book(String title, String author) {
+    public Book(String title, String author) throws EmptyStringException {
+        if (title.isEmpty() || author.isEmpty()) {
+            throw new EmptyStringException();
+        }
         this.title = title;
         this.author = author;
         this.available = true;
@@ -42,18 +48,25 @@ public abstract class Book implements Loadable, Saveable {
         return borrower;
     }
 
-    // REQUIRES: (borrower != null) and (available == true)
     // MODIFIES: this
     // EFFECTS: change the status of this book to be loaned to borrower
-    public void beLoaned(Person borrower) {
+    public void beLoaned(Person borrower) throws NullPersonException, BookNotAvailableException {
+        if (borrower == null) {
+            throw new NullPersonException();
+        }
+        if (!available) {
+            throw new BookNotAvailableException();
+        }
         this.borrower = borrower;
         available = false;
     }
 
-    // REQUIRES: available == false
     // MODIFIES: this
     // EFFECTS: change the status of this book to be returned
-    public void beReturned() {
+    public void beReturned() throws BookNotAvailableException {
+        if (available) {
+            throw new BookNotAvailableException();
+        }
         this.borrower = null;
         available = true;
     }

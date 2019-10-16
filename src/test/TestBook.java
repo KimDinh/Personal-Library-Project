@@ -1,3 +1,6 @@
+import exceptions.BookNotAvailableException;
+import exceptions.EmptyStringException;
+import exceptions.NullPersonException;
 import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,10 +18,31 @@ public class TestBook {
     FileWriter outFile;
 
     @BeforeEach
-    void runBefore() {
+    void runBefore() throws EmptyStringException {
         regularBookA = new RegularBook("Book A", "Author A");
         rareBookB = new RareBook("Book B", "Author B");
         borrower = new RegularPerson("Kim", "123456789", "abcdef@gmail.com");
+    }
+
+    @Test
+    void testBookExpectEmptyStringException() {
+        try {
+            Book book = new RegularBook("", "Author A");
+            fail();
+        } catch (EmptyStringException e) {}
+        try {
+            Book book = new RegularBook("Book A", "");
+            fail();
+        } catch (EmptyStringException e) {}
+    }
+
+    @Test
+    void testBookNothingThrown() {
+        try {
+            Book book = new RegularBook("Book A", "Author A");
+        } catch (EmptyStringException e) {
+            fail();
+        }
     }
 
     @Test
@@ -32,7 +56,7 @@ public class TestBook {
     }
 
     @Test
-    void testIsAvailable() {
+    void testIsAvailable() throws NullPersonException, BookNotAvailableException {
         assertTrue(regularBookA.isAvailable());
         regularBookA.beLoaned(borrower);
         assertFalse(regularBookA.isAvailable());
@@ -41,7 +65,7 @@ public class TestBook {
     }
 
     @Test
-    void testGetBorrower() {
+    void testGetBorrower() throws NullPersonException, BookNotAvailableException {
         assertEquals(null, regularBookA.getBorrower());
         regularBookA.beLoaned(borrower);
         assertEquals(borrower, regularBookA.getBorrower());
@@ -50,22 +74,62 @@ public class TestBook {
     }
 
     @Test
-    void testBeLoaned() {
-        regularBookA.beLoaned(borrower);
+    void testBeLoanedNothingThrown() {
+        try {
+            regularBookA.beLoaned(borrower);
+        } catch (NullPersonException e) {
+            fail();
+        } catch (BookNotAvailableException e) {
+            fail();
+        }
         assertEquals(borrower, regularBookA.getBorrower());
         assertFalse(regularBookA.isAvailable());
     }
 
     @Test
-    void testBeReturned() {
+    void testBeLoanedExpectBookNotAvailableException() {
+        try {
+            regularBookA.beLoaned(borrower);
+            regularBookA.beLoaned(borrower);
+            fail();
+        } catch (NullPersonException e) {
+            fail();
+        } catch (BookNotAvailableException e) {}
+    }
+
+    @Test
+    void testBeLoanedExpectNullPersonException() {
+        try {
+            regularBookA.beLoaned(null);
+            fail();
+        } catch (NullPersonException e) {
+        } catch (BookNotAvailableException e) {
+            fail();
+        }
+    }
+
+    @Test
+    void testBeReturnedNothingThrown() throws BookNotAvailableException, NullPersonException{
         regularBookA.beLoaned(borrower);
-        regularBookA.beReturned();
+        try{
+            regularBookA.beReturned();
+        } catch (BookNotAvailableException e) {
+            fail();
+        }
         assertEquals(null, regularBookA.getBorrower());
         assertTrue(regularBookA.isAvailable());
     }
 
     @Test
-    void testToStringRegular() {
+    void testBeReturnedExpectBookNotAvailableException() {
+        try {
+            regularBookA.beReturned();
+            fail();
+        } catch (BookNotAvailableException e) {}
+    }
+
+    @Test
+    void testToStringRegular() throws NullPersonException, BookNotAvailableException {
         assertEquals("Title: Book A\nAuthor: Author A\nThis book is available.\n", regularBookA.toString());
         regularBookA.beLoaned(borrower);
         assertEquals("Title: Book A\nAuthor: Author A\nThis book is loaned.\n", regularBookA.toString());
@@ -74,7 +138,7 @@ public class TestBook {
     }
 
     @Test
-    void testToStringRare() {
+    void testToStringRare() throws NullPersonException, BookNotAvailableException {
         assertEquals("Title: Book B\nAuthor: Author B\n" +
                 "This is a rare book.\nThis book is available.\n", rareBookB.toString());
         rareBookB.beLoaned(borrower);
@@ -87,7 +151,7 @@ public class TestBook {
 
     @Test
     void testLoadAndSaveAvailable() throws IOException {
-        inFile = new Scanner(new FileInputStream("src/test/testBookAvailableLoad.txt"));
+        inFile = new Scanner(new FileInputStream("data/testBookAvailableLoad.txt"));
         regularBookA.load(inFile);
         rareBookB.load(inFile);
         inFile.close();
@@ -96,11 +160,11 @@ public class TestBook {
         assertTrue(regularBookA.isAvailable());
         assertEquals(null, regularBookA.getBorrower());
 
-        outFile = new FileWriter(new File("src/test/testSave.txt"));
+        outFile = new FileWriter(new File("data/testSave.txt"));
         regularBookA.save(outFile);
         rareBookB.save(outFile);
         outFile.close();
-        inFile = new Scanner(new FileInputStream("src/test/testSave.txt"));
+        inFile = new Scanner(new FileInputStream("data/testSave.txt"));
         assertTrue(inFile.nextLine().equals("0"));
         assertTrue(inFile.nextLine().equals("Book A"));
         assertTrue(inFile.nextLine().equals("Author A"));
@@ -115,7 +179,7 @@ public class TestBook {
 
     @Test
     void testLoadAndSaveLoaned() throws IOException {
-        inFile = new Scanner(new FileInputStream("src/test/testBookLoanedLoad.txt"));
+        inFile = new Scanner(new FileInputStream("data/testBookLoanedLoad.txt"));
         regularBookA.load(inFile);
         rareBookB.load(inFile);
         inFile.close();
@@ -124,11 +188,11 @@ public class TestBook {
         assertFalse(regularBookA.isAvailable());
         assertFalse(regularBookA.getBorrower() == null);
 
-        outFile = new FileWriter(new File("src/test/testSave.txt"));
+        outFile = new FileWriter(new File("data/testSave.txt"));
         regularBookA.save(outFile);
         rareBookB.save(outFile);
         outFile.close();
-        inFile = new Scanner(new FileInputStream("src/test/testSave.txt"));
+        inFile = new Scanner(new FileInputStream("data/testSave.txt"));
         assertTrue(inFile.nextLine().equals("0"));
         assertTrue(inFile.nextLine().equals("Book A"));
         assertTrue(inFile.nextLine().equals("Author A"));

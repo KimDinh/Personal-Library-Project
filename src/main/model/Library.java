@@ -1,5 +1,9 @@
 package model;
 
+import exceptions.BookNotAvailableException;
+import exceptions.NullBookException;
+import exceptions.NullPersonException;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,26 +34,37 @@ public class Library implements Loadable, Saveable {
         return numOfAvailable() + numOfLoaned();
     }
 
-    // REQUIRES: newBook != null
     // MODIFIES: this
     // EFFECTS: add newBook to availableBooks
-    public void addBook(Book newBook) {
+    public void addBook(Book newBook) throws NullBookException {
+        if (newBook == null) {
+            throw new NullBookException();
+        }
         availableBooks.add(newBook);
     }
 
-    // REQUIRES: book is in availableBooks
     // MODIFIES: this
     // EFFECTS: loan the book to borrower
-    public void loanBook(Book book, Person borrower) {
+    public void loanBook(String title, Person borrower) throws NullPersonException, BookNotAvailableException {
+        Book book = findInAvailable(title);
+        if (book == null) {
+            throw new BookNotAvailableException();
+        }
+        if (borrower == null) {
+            throw new NullPersonException();
+        }
         availableBooks.remove(book);
         loanedBooks.add(book);
         book.beLoaned(borrower);
     }
 
-    // REQUIRES: book is in loanedBooks
     // MODIFIES: this
     // EFFECTS: move the book to availableBooks
-    public void returnBook(Book book) {
+    public void returnBook(String title) throws BookNotAvailableException {
+        Book book = findInLoaned(title);
+        if (book == null) {
+            throw new BookNotAvailableException();
+        }
         loanedBooks.remove(book);
         availableBooks.add(book);
         book.beReturned();

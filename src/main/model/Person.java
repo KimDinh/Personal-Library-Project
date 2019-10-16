@@ -1,5 +1,7 @@
 package model;
 
+import exceptions.EmptyStringException;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
@@ -11,10 +13,12 @@ public abstract class Person implements Loadable, Saveable {
 
     public Person() {}
 
-    // REQUIRES: name must be a non-empty string
     // EFFECTS: initialize name, gender, phoneNumber, email of this person
     // to the parameters passed in
-    public Person(String name, String phoneNumber, String email) {
+    public Person(String name, String phoneNumber, String email) throws EmptyStringException {
+        if (name.isEmpty() || phoneNumber.isEmpty() || email.isEmpty()) {
+            throw new EmptyStringException();
+        }
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
@@ -35,22 +39,30 @@ public abstract class Person implements Loadable, Saveable {
         return email;
     }
 
-    // REQUIRES: newName must be a non-empty string
     // MODIFIES: this
     // EFFECTS: change this person's name to newName
-    public void updateName(String newName) {
+    public void updateName(String newName) throws EmptyStringException {
+        if (newName.isEmpty()) {
+            throw new EmptyStringException();
+        }
         name = newName;
     }
 
     // MODIFIES: this
     // EFFECTS: change this person's phone number to newPhoneNumber
-    public void updatePhoneNumber(String newPhoneNumber) {
+    public void updatePhoneNumber(String newPhoneNumber) throws EmptyStringException {
+        if (newPhoneNumber.isEmpty()) {
+            throw new EmptyStringException();
+        }
         phoneNumber = newPhoneNumber;
     }
 
     // MODIFIES: this
     // EFFECTS: change this person's email address to newEmail
-    public void updateEmail(String newEmail) {
+    public void updateEmail(String newEmail) throws EmptyStringException {
+        if (newEmail.isEmpty()) {
+            throw new EmptyStringException();
+        }
         email = newEmail;
     }
 

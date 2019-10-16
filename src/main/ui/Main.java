@@ -1,5 +1,9 @@
 package ui;
 
+import exceptions.BookNotAvailableException;
+import exceptions.EmptyStringException;
+import exceptions.NullBookException;
+import exceptions.NullPersonException;
 import model.*;
 
 import java.io.*;
@@ -23,13 +27,13 @@ public class Main {
     }
 
     private void loadFromFile() throws IOException {
-        Scanner inFile = new Scanner(new FileInputStream("library.txt"));
+        Scanner inFile = new Scanner(new FileInputStream("data/library.txt"));
         library.load(inFile);
         inFile.close();
     }
 
     private void saveToFile() throws IOException {
-        FileWriter outFile = new FileWriter(new File("library.txt"));
+        FileWriter outFile = new FileWriter(new File("data/library.txt"));
         library.save(outFile);
         outFile.close();
     }
@@ -83,19 +87,35 @@ public class Main {
 
     // EFFECTS: add a new book to availableBooks
     private void addBook() {
+        Book newBook = getBookInfo();
+        try {
+            library.addBook(newBook);
+            System.out.println("This book has successfully been added.\n");
+        } catch (NullBookException e) {
+            System.out.println("No book has been specified.\n");
+        }
+    }
+
+    // EFFECTS: return a new Book with the valid inputted info of the book;
+    // otherwise return null
+    private Book getBookInfo() {
         System.out.print("Enter the book's title: ");
         String title = scanner.nextLine();
         System.out.print("Enter the book's author: ");
         String author = scanner.nextLine();
         System.out.print("Is it a rare book? Press 'y' for yes. Press any other key for no. ");
-        Book newBook;
-        if (scanner.nextLine().equals("y")) {
-            newBook = new RareBook(title, author);
-        } else {
-            newBook = new RegularBook(title, author);
+        Book book = null;
+        try {
+            if (scanner.nextLine().equals("y")) {
+                book = new RareBook(title, author);
+            } else {
+                book = new RegularBook(title, author);
+            }
+        } catch (EmptyStringException e) {
+            System.out.println("Title or author cannot be empty.");
+        } finally {
+            return book;
         }
-        library.addBook(newBook);
-        System.out.println("You have successfully added the book.\n");
     }
 
     // EFFECTS: if the inputted title matches the title of an available book,
@@ -103,14 +123,15 @@ public class Main {
     private void loanBook() {
         System.out.print("Enter the book's title: ");
         String title = scanner.nextLine();
-        Book book = library.findInAvailable(title);
-        if (book == null) {
-            System.out.println("This book is not available.\n");
-            return;
-        }
         Person borrower = getBorrowerInfo();
-        library.loanBook(book, borrower);
-        System.out.println("The book has successfully been loaned.\n");
+        try {
+            library.loanBook(title, borrower);
+            System.out.println("The book has successfully been loaned.\n");
+        } catch (NullPersonException e) {
+            System.out.println("No borrower has been specified.\n");
+        } catch (BookNotAvailableException e) {
+            System.out.println("This book is not available.\n");
+        }
     }
 
     // EFFECTS: print the information of all the books in the library
@@ -150,7 +171,8 @@ public class Main {
         }
     }
 
-    // EFFECTS: return a new Person with the inputted info of the borrower
+    // EFFECTS: return a new Person with the valid inputted info of the borrower;
+    // otherwise return null
     private Person getBorrowerInfo() {
         System.out.print("Enter the information of the borrower:\nName: ");
         String name = scanner.nextLine();
@@ -158,11 +180,16 @@ public class Main {
         String phoneNumber = scanner.nextLine();
         System.out.print("Email: ");
         String email = scanner.nextLine();
-        System.out.println("Is this person a friend? Press 'y' for yes. Press any other key for no. ");
-        if (scanner.nextLine().toLowerCase().equals("y")) {
-            return new Friend(name, phoneNumber, email);
-        } else {
-            return new RegularPerson(name, phoneNumber, email);
+        System.out.print("Is this person a friend? Press 'y' for yes. Press any other key for no. ");
+        try {
+            if (scanner.nextLine().toLowerCase().equals("y")) {
+                return new Friend(name, phoneNumber, email);
+            } else {
+                return new RegularPerson(name, phoneNumber, email);
+            }
+        } catch (EmptyStringException e) {
+            System.out.println("Name, phone number or email cannot be empty.");
+            return null;
         }
     }
 }
