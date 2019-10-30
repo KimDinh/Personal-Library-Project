@@ -64,25 +64,18 @@ public class Main {
 
     // EFFECTS: call the appropriate functionality corresponding to the command passed in
     private void processCommand(String command) {
-        switch (command) {
-            case "1":
-                addBook();
-                break;
-            case "2":
-                loanBook();
-                break;
-            case "3":
-                returnBook();
-                break;
-            case "4":
-                printAllBooks();
-                break;
-            case "5":
-                findBook();
-                break;
-            default:
-                System.out.println("You have entered an invalid command.\n");
-                break;
+        if (command.equals("1")) {
+            addBook();
+        } else if (command.equals("2")) {
+            loanBook();
+        } else if (command.equals("3")) {
+            returnBook();
+        } else if (command.equals("4")) {
+            printAllBooks();
+        } else if (command.equals("5")) {
+            findBook();
+        } else {
+            System.out.println("You have entered an invalid command.\n");
         }
     }
 
