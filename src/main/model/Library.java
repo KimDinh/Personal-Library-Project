@@ -1,5 +1,6 @@
 package model;
 
+import exceptions.AlreadyBorrowException;
 import exceptions.BookNotAvailableException;
 import exceptions.NullBookException;
 import exceptions.NullPersonException;
@@ -12,11 +13,13 @@ import java.util.Scanner;
 public class Library implements Loadable, Saveable {
     private ArrayList<Book> availableBooks;
     private ArrayList<Book> loanedBooks;
+    private ArrayList<Person> borrowers;
 
     // EFFECTS: initialize an empty library
     public Library() {
         availableBooks = new ArrayList<>();
         loanedBooks = new ArrayList<>();
+        borrowers = new ArrayList<>();
     }
 
     // EFFECTS: return the number of available books
@@ -45,29 +48,39 @@ public class Library implements Loadable, Saveable {
 
     // MODIFIES: this
     // EFFECTS: loan the book to borrower
-    public void loanBook(String title, Person borrower) throws NullPersonException, BookNotAvailableException {
+    public void loanBook(String title, Person borrower) throws NullPersonException,
+            BookNotAvailableException, NullBookException, AlreadyBorrowException {
+        if (borrower == null) {
+            throw new NullPersonException();
+        }
         Book book = findInAvailable(title);
         if (book == null) {
             throw new BookNotAvailableException();
         }
-        if (borrower == null) {
-            throw new NullPersonException();
+        if (borrowers.contains(borrower)) {
+            throw new AlreadyBorrowException();
         }
         availableBooks.remove(book);
         loanedBooks.add(book);
+        borrowers.add(borrower);
         book.beLoaned(borrower);
     }
 
     // MODIFIES: this
     // EFFECTS: move the book to availableBooks
-    public void returnBook(String title) throws BookNotAvailableException {
+    public void returnBook(String title, Person borrower) throws BookNotAvailableException,
+            NullPersonException, NullBookException {
+        if (borrower == null) {
+            throw new NullPersonException();
+        }
         Book book = findInLoaned(title);
-        if (book == null) {
+        if (book == null || !book.getBorrower().equals(borrower)) {
             throw new BookNotAvailableException();
         }
         loanedBooks.remove(book);
         availableBooks.add(book);
-        book.beReturned();
+        borrowers.remove(borrower);
+        book.beReturned(borrower);
     }
 
     // EFFECTS: if title matches the title of an available book,
@@ -120,6 +133,7 @@ public class Library implements Loadable, Saveable {
                 availableBooks.add(book);
             } else {
                 loanedBooks.add(book);
+                borrowers.add(book.getBorrower());
             }
         }
     }

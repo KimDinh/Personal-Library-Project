@@ -1,7 +1,4 @@
-import exceptions.BookNotAvailableException;
-import exceptions.EmptyStringException;
-import exceptions.NullBookException;
-import exceptions.NullPersonException;
+import exceptions.*;
 import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,16 +55,14 @@ public class TestLibrary {
     }
 
     @Test
-    void testLoanBookNothingThrown() throws NullBookException {
-        library.addBook(regularBookA);
-        assertEquals(1, library.numOfBooks());
-        assertEquals(1, library.numOfAvailable());
-        assertEquals(0, library.numOfLoaned());
+    void testLoanBookNothingThrown() {
         try {
+            library.addBook(regularBookA);
+            assertEquals(1, library.numOfBooks());
+            assertEquals(1, library.numOfAvailable());
+            assertEquals(0, library.numOfLoaned());
             library.loanBook("Book A", borrower);
-        } catch (BookNotAvailableException e) {
-            fail();
-        } catch (NullPersonException e) {
+        } catch (Exception e) {
             fail();
         }
         assertEquals(0, library.numOfAvailable());
@@ -81,62 +76,98 @@ public class TestLibrary {
             library.loanBook("Book A", borrower);
             fail();
         } catch (BookNotAvailableException e) {
-        } catch (NullPersonException e) {
+        } catch (Exception e) {
             fail();
         }
+
     }
 
     @Test
-    void testLoanBookExpectNullPersonException() throws NullBookException {
-        library.addBook(regularBookA);
+    void testLoanBookExpectNullPersonException() {
         try {
+            library.addBook(regularBookA);
             library.loanBook("Book A", null);
             fail();
-        } catch (BookNotAvailableException e) {
+        } catch (NullPersonException e) {
+        } catch (Exception e) {
             fail();
-        } catch (NullPersonException e) {}
+        }
         assertEquals(regularBookA, library.findInAvailable("Book A"));
     }
 
     @Test
-    void testReturnBookNothingThrown() throws NullPersonException, BookNotAvailableException, NullBookException {
-        library.addBook(regularBookA);
-        library.loanBook("Book A", borrower);
-        assertEquals(1, library.numOfBooks());
-        assertEquals(1, library.numOfLoaned());
-        try{
-            library.returnBook("Book A");
-        } catch (BookNotAvailableException e) {
+    void testLoanBookExpectAlreadyBorrowException() {
+        try {
+            library.addBook(regularBookA);
+            library.addBook(rareBookB);
+            library.loanBook("Book A", borrower);
+            library.loanBook("Book B", borrower);
+        } catch (AlreadyBorrowException e) {
+        } catch (Exception e) {
             fail();
         }
-        assertEquals(0, library.numOfLoaned());
-        assertEquals(1, library.numOfAvailable());
-        assertEquals(regularBookA, library.findInAvailable("Book A"));
+    }
+
+    @Test
+    void testReturnBookNothingThrown() {
+        try{
+            library.addBook(regularBookA);
+            library.loanBook("Book A", borrower);
+            assertEquals(1, library.numOfBooks());
+            assertEquals(1, library.numOfLoaned());
+            library.returnBook("Book A", borrower);
+            assertEquals(0, library.numOfLoaned());
+            assertEquals(1, library.numOfAvailable());
+            assertEquals(regularBookA, library.findInAvailable("Book A"));
+        } catch (Exception e) {
+            fail();
+        }
     }
 
     @Test
     void testReturnBookExpectBookNotAvailableException() {
         try {
-            library.returnBook("Book A");
+            library.returnBook("Book A", borrower);
             fail();
-        } catch (BookNotAvailableException e) {}
+        } catch (BookNotAvailableException e) {
+        } catch (Exception e) {
+            fail();
+        }
+        try {
+            library.addBook(regularBookA);
+            library.loanBook("Book A", borrower);
+            Person p = new RegularPerson("Person", "123456789", "aaaaaa@gmail.com");
+            library.returnBook("Book A", p);
+            fail();
+        } catch (BookNotAvailableException e) {
+        } catch (Exception e) {
+            fail();
+        }
     }
 
     @Test
-    void testFindInAvailable() throws NullBookException {
-        assertEquals(null ,library.findInAvailable("Book A"));
-        library.addBook(regularBookA);
-        assertEquals(regularBookA, library.findInAvailable("Book A"));
-        assertEquals(null, library.findInAvailable("Book B"));
+    void testFindInAvailable() {
+        try {
+            assertEquals(null, library.findInAvailable("Book A"));
+            library.addBook(regularBookA);
+            assertEquals(regularBookA, library.findInAvailable("Book A"));
+            assertEquals(null, library.findInAvailable("Book B"));
+        } catch (Exception e) {
+            fail();
+        }
     }
 
     @Test
-    void testFindInLoaned() throws NullPersonException, BookNotAvailableException, NullBookException {
-        assertEquals(null, library.findInLoaned("Book A"));
-        library.addBook(regularBookA);
-        library.loanBook("Book A", borrower);
-        assertEquals(regularBookA, library.findInLoaned("Book A"));
-        assertEquals(null, library.findInLoaned("Book B"));
+    void testFindInLoaned() {
+        try {
+            assertEquals(null, library.findInLoaned("Book A"));
+            library.addBook(regularBookA);
+            library.loanBook("Book A", borrower);
+            assertEquals(regularBookA, library.findInLoaned("Book A"));
+            assertEquals(null, library.findInLoaned("Book B"));
+        } catch (Exception e) {
+            fail();
+        }
     }
 
     @Test

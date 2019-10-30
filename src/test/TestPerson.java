@@ -1,7 +1,8 @@
+import exceptions.BookNotAvailableException;
 import exceptions.EmptyStringException;
-import model.Friend;
-import model.Person;
-import model.RegularPerson;
+import exceptions.NullBookException;
+import exceptions.NullPersonException;
+import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestPerson {
     private Person regularPerson;
     private Person friend;
+    private Book book;
     Scanner inFile;
     FileWriter outFile;
 
@@ -20,6 +22,7 @@ public class TestPerson {
     void runBefore() throws EmptyStringException {
         regularPerson = new RegularPerson("Kim", "123456789", "abcdef@gmail.com");
         friend = new Friend("Goku", "987654321", "aaaaaa@gmail.com");
+        book = new RegularBook("Book A", "Author A");
     }
 
     @Test
@@ -61,6 +64,7 @@ public class TestPerson {
     void testGetEmail() {
         assertEquals("abcdef@gmail.com", regularPerson.getEmail());
     }
+
 
     @Test
     void testUpdateNameNothingThrown() {
@@ -117,6 +121,88 @@ public class TestPerson {
             fail();
         } catch (EmptyStringException e) {}
         assertEquals("abcdef@gmail.com", regularPerson.getEmail());
+    }
+
+    @Test
+    void testBorrowBookNothingThrown() {
+        try {
+            regularPerson.borrowBook(book);
+            assertEquals(book, regularPerson.getBorrowedBook());
+        } catch (BookNotAvailableException e) {
+            fail();
+        } catch (NullPersonException e) {
+            fail();
+        } catch (NullBookException e) {
+            fail();
+        }
+    }
+
+    @Test
+    void testBorrowBookExpectBookNotAvailableException() {
+        try {
+            regularPerson.borrowBook(book);
+            friend.borrowBook(book);
+            fail();
+        } catch (BookNotAvailableException e) {
+        } catch (NullPersonException e) {
+            fail();
+        } catch (NullBookException e) {
+            fail();
+        }
+    }
+
+    @Test
+    void testBorrowBookExpectNullBookException() {
+        try {
+            regularPerson.borrowBook(null);
+            fail();
+        } catch (BookNotAvailableException e) {
+            fail();
+        } catch (NullPersonException e) {
+            fail();
+        } catch (NullBookException e) {
+        }
+    }
+
+    @Test
+    void testReturnBookNothingThrown() {
+        try {
+            regularPerson.borrowBook(book);
+            regularPerson.returnBook(book);
+        } catch (BookNotAvailableException e) {
+            fail();
+        } catch (NullPersonException e) {
+            fail();
+        } catch (NullBookException e) {
+            fail();
+        }
+    }
+
+    @Test
+    void testReturnBookExpectBookNotAvailableException() {
+        try {
+            regularPerson.borrowBook(book);
+            friend.returnBook(book);
+            fail();
+        } catch (BookNotAvailableException e) {
+        } catch (NullPersonException e) {
+            fail();
+        } catch (NullBookException e) {
+            fail();
+        }
+    }
+
+    @Test
+    void testReturnBookExpectNullBookException() {
+        try {
+            regularPerson.returnBook(null);
+            fail();
+        } catch (BookNotAvailableException e) {
+            fail();
+        } catch (NullBookException e) {
+        } catch (NullPersonException e) {
+            fail();
+        }
     }
 
     @Test

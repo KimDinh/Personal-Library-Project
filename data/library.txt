@@ -5,11 +5,7 @@ Author A
 1
 Book B
 Author B
-0
-0
-Kim
-123456789
-abcdef@gmail.com
+1
 1
 Book C
 Author C

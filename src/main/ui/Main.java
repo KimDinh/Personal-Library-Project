@@ -1,9 +1,6 @@
 package ui;
 
-import exceptions.BookNotAvailableException;
-import exceptions.EmptyStringException;
-import exceptions.NullBookException;
-import exceptions.NullPersonException;
+import exceptions.*;
 import model.*;
 
 import java.io.*;
@@ -59,8 +56,9 @@ public class Main {
         System.out.println("Please enter what you would like to do:");
         System.out.println("[1] Add a book");
         System.out.println("[2] Loan a book");
-        System.out.println("[3] See all the books");
-        System.out.println("[4] See a book");
+        System.out.println("[3] Return a book");
+        System.out.println("[4] See all the books");
+        System.out.println("[5] See a book");
         System.out.println("[q] Quit");
     }
 
@@ -74,9 +72,12 @@ public class Main {
                 loanBook();
                 break;
             case "3":
-                printAllBooks();
+                returnBook();
                 break;
             case "4":
+                printAllBooks();
+                break;
+            case "5":
                 findBook();
                 break;
             default:
@@ -131,6 +132,26 @@ public class Main {
             System.out.println("No borrower has been specified.\n");
         } catch (BookNotAvailableException e) {
             System.out.println("This book is not available.\n");
+        } catch (NullBookException e) {
+            System.out.println("No book has been specified.\n");
+        } catch (AlreadyBorrowException e) {
+            System.out.println("This person has already borrowed a book.\n");
+        }
+    }
+
+    private void returnBook() {
+        System.out.println("Enter the book's title: ");
+        String title = scanner.nextLine();
+        Person borrower = getBorrowerInfo();
+        try {
+            library.returnBook(title, borrower);
+            System.out.println("The book has successfully been returned.\n");
+        } catch (NullPersonException e) {
+            System.out.println("No borrower has been specified.\n");
+        } catch (BookNotAvailableException e) {
+            System.out.println("This book cannot be returned.\n");
+        } catch (NullBookException e) {
+            System.out.println("No book has been specified.\n");
         }
     }
 

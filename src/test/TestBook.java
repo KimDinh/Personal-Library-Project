@@ -1,5 +1,6 @@
 import exceptions.BookNotAvailableException;
 import exceptions.EmptyStringException;
+import exceptions.NullBookException;
 import exceptions.NullPersonException;
 import model.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,34 +57,40 @@ public class TestBook {
     }
 
     @Test
-    void testIsAvailable() throws NullPersonException, BookNotAvailableException {
-        assertTrue(regularBookA.isAvailable());
-        regularBookA.beLoaned(borrower);
-        assertFalse(regularBookA.isAvailable());
-        regularBookA.beReturned();
-        assertTrue(regularBookA.isAvailable());
+    void testIsAvailable() {
+        try {
+            assertTrue(regularBookA.isAvailable());
+            regularBookA.beLoaned(borrower);
+            assertFalse(regularBookA.isAvailable());
+            regularBookA.beReturned(borrower);
+            assertTrue(regularBookA.isAvailable());
+        } catch (Exception e) {
+            fail();
+        }
     }
 
     @Test
-    void testGetBorrower() throws NullPersonException, BookNotAvailableException {
-        assertEquals(null, regularBookA.getBorrower());
-        regularBookA.beLoaned(borrower);
-        assertEquals(borrower, regularBookA.getBorrower());
-        regularBookA.beReturned();
-        assertEquals(null, regularBookA.getBorrower());
+    void testGetBorrower() {
+        try {
+            assertEquals(null, regularBookA.getBorrower());
+            regularBookA.beLoaned(borrower);
+            assertEquals(borrower, regularBookA.getBorrower());
+            regularBookA.beReturned(borrower);
+            assertEquals(null, regularBookA.getBorrower());
+        } catch (Exception e) {
+            fail();
+        }
     }
 
     @Test
     void testBeLoanedNothingThrown() {
         try {
             regularBookA.beLoaned(borrower);
-        } catch (NullPersonException e) {
-            fail();
-        } catch (BookNotAvailableException e) {
+            assertEquals(borrower, regularBookA.getBorrower());
+            assertFalse(regularBookA.isAvailable());
+        } catch (Exception e) {
             fail();
         }
-        assertEquals(borrower, regularBookA.getBorrower());
-        assertFalse(regularBookA.isAvailable());
     }
 
     @Test
@@ -94,7 +101,10 @@ public class TestBook {
             fail();
         } catch (NullPersonException e) {
             fail();
-        } catch (BookNotAvailableException e) {}
+        } catch (BookNotAvailableException e) {
+        } catch (NullBookException e) {
+            fail();
+        }
     }
 
     @Test
@@ -105,48 +115,77 @@ public class TestBook {
         } catch (NullPersonException e) {
         } catch (BookNotAvailableException e) {
             fail();
+        } catch (NullBookException e) {
+            fail();
         }
     }
 
     @Test
-    void testBeReturnedNothingThrown() throws BookNotAvailableException, NullPersonException{
-        regularBookA.beLoaned(borrower);
-        try{
-            regularBookA.beReturned();
-        } catch (BookNotAvailableException e) {
+    void testBeReturnedNothingThrown() {
+        try {
+            regularBookA.beLoaned(borrower);
+            regularBookA.beReturned(borrower);
+            assertEquals(null, regularBookA.getBorrower());
+            assertTrue(regularBookA.isAvailable());
+        } catch (Exception e) {
             fail();
         }
-        assertEquals(null, regularBookA.getBorrower());
-        assertTrue(regularBookA.isAvailable());
+
     }
 
     @Test
     void testBeReturnedExpectBookNotAvailableException() {
         try {
-            regularBookA.beReturned();
+            regularBookA.beReturned(borrower);
             fail();
-        } catch (BookNotAvailableException e) {}
+        } catch (BookNotAvailableException e) {
+        } catch (NullBookException e) {
+            fail();
+        } catch (NullPersonException e) {
+            fail();
+        }
     }
 
     @Test
-    void testToStringRegular() throws NullPersonException, BookNotAvailableException {
-        assertEquals("Title: Book A\nAuthor: Author A\nThis book is available.\n", regularBookA.toString());
-        regularBookA.beLoaned(borrower);
-        assertEquals("Title: Book A\nAuthor: Author A\nThis book is loaned.\n", regularBookA.toString());
-        regularBookA.beReturned();
-        assertEquals("Title: Book A\nAuthor: Author A\nThis book is available.\n", regularBookA.toString());
+    void testBeReturnedExpectNullPersonException() {
+        try {
+            regularBookA.beReturned(null);
+            fail();
+        } catch (BookNotAvailableException e) {
+            fail();
+        } catch (NullBookException e) {
+            fail();
+        } catch (NullPersonException e) {
+        }
     }
 
     @Test
-    void testToStringRare() throws NullPersonException, BookNotAvailableException {
-        assertEquals("Title: Book B\nAuthor: Author B\n" +
-                "This is a rare book.\nThis book is available.\n", rareBookB.toString());
-        rareBookB.beLoaned(borrower);
-        assertEquals("Title: Book B\nAuthor: Author B\n" +
-                "This is a rare book.\nThis book is loaned.\n", rareBookB.toString());
-        rareBookB.beReturned();
-        assertEquals("Title: Book B\nAuthor: Author B\n" +
-                "This is a rare book.\nThis book is available.\n", rareBookB.toString());
+    void testToStringRegular() {
+        try {
+            assertEquals("Title: Book A\nAuthor: Author A\nThis book is available.\n", regularBookA.toString());
+            regularBookA.beLoaned(borrower);
+            assertEquals("Title: Book A\nAuthor: Author A\nThis book is loaned.\n", regularBookA.toString());
+            regularBookA.beReturned(borrower);
+            assertEquals("Title: Book A\nAuthor: Author A\nThis book is available.\n", regularBookA.toString());
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    void testToStringRare() {
+        try {
+            assertEquals("Title: Book B\nAuthor: Author B\n" +
+                    "This is a rare book.\nThis book is available.\n", rareBookB.toString());
+            rareBookB.beLoaned(borrower);
+            assertEquals("Title: Book B\nAuthor: Author B\n" +
+                    "This is a rare book.\nThis book is loaned.\n", rareBookB.toString());
+            rareBookB.beReturned(borrower);
+            assertEquals("Title: Book B\nAuthor: Author B\n" +
+                    "This is a rare book.\nThis book is available.\n", rareBookB.toString());
+        } catch (Exception e) {
+            fail();
+        }
     }
 
     @Test

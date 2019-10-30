@@ -2,6 +2,7 @@ package model;
 
 import exceptions.BookNotAvailableException;
 import exceptions.EmptyStringException;
+import exceptions.NullBookException;
 import exceptions.NullPersonException;
 
 import java.io.FileWriter;
@@ -50,7 +51,7 @@ public abstract class Book implements Loadable, Saveable {
 
     // MODIFIES: this
     // EFFECTS: change the status of this book to be loaned to borrower
-    public void beLoaned(Person borrower) throws NullPersonException, BookNotAvailableException {
+    public void beLoaned(Person borrower) throws NullPersonException, BookNotAvailableException, NullBookException {
         if (borrower == null) {
             throw new NullPersonException();
         }
@@ -59,16 +60,25 @@ public abstract class Book implements Loadable, Saveable {
         }
         this.borrower = borrower;
         available = false;
+        if (borrower.getBorrowedBook() != this) {
+            borrower.borrowBook(this);
+        }
     }
 
     // MODIFIES: this
     // EFFECTS: change the status of this book to be returned
-    public void beReturned() throws BookNotAvailableException {
+    public void beReturned(Person borrower) throws BookNotAvailableException, NullPersonException, NullBookException {
+        if (borrower == null) {
+            throw new NullPersonException();
+        }
         if (available) {
             throw new BookNotAvailableException();
         }
         this.borrower = null;
         available = true;
+        if (borrower.getBorrowedBook() == this) {
+            borrower.returnBook(this);
+        }
     }
 
     // EFFECTS: return a String that displays the information of this book
@@ -96,5 +106,22 @@ public abstract class Book implements Loadable, Saveable {
         if (!available) {
             borrower.save(outFile);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Book book = (Book) o;
+        return this.title.equals(book.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return title.hashCode();
     }
 }
