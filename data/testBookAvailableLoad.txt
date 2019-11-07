@@ -1,6 +1,6 @@
 Book A
 Author A
-1
+Available
 Book B
 Author B
-1
+Available

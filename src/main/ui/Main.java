@@ -154,8 +154,14 @@ public class Main {
             System.out.println("There is no book in your library.\n");
             return;
         }
-        library.printAvailableBooks();
-        library.printLoanedBooks();
+        List<Book> books = library.getAvailableBooks();
+        for (Book book : books) {
+            System.out.println(book);
+        }
+        books = library.getLoanedBooks();
+        for (Book book : books) {
+            System.out.println(book);
+        }
     }
 
     // EFFECTS: print all the books whose titles matches the inputted title

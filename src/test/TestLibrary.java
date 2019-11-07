@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.util.List;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -171,6 +172,39 @@ public class TestLibrary {
     }
 
     @Test
+    void testGetAvailableBooks() {
+        List<Book> books = library.getAvailableBooks();
+        assertEquals(0, books.size());
+        try {
+            library.addBook(regularBookA);
+            library.addBook(rareBookB);
+            books = library.getAvailableBooks();
+            assertEquals(2, books.size());
+            assertTrue(books.contains(regularBookA));
+            assertTrue(books.contains(rareBookB));
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    void testGetLoanedBooks() {
+        try {
+            library.addBook(regularBookA);
+            library.addBook(rareBookB);
+            library.loanBook("Book A", borrower);
+            Person friend = new Friend("Goku", "987654321", "aaaaaa@gmail.com");
+            library.loanBook("Book B", friend);
+            List<Book> books = library.getLoanedBooks();
+            assertEquals(2, books.size());
+            assertTrue(books.contains(regularBookA));
+            assertTrue(books.contains(rareBookB));
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
     void testLoadAndSaveEmpty() throws IOException {
         inFile = new Scanner(new FileInputStream("data/testLibraryLoadEmpty.txt"));
         library.load(inFile);
@@ -200,23 +234,23 @@ public class TestLibrary {
         library.save(outFile);
         outFile.close();
         inFile = new Scanner(new FileInputStream("data/testSave.txt"));
-        assertTrue(inFile.nextLine().equals("0"));
+        assertTrue(inFile.nextLine().equals(Book.REGULAR_BOOK_CODE));
         assertTrue(inFile.nextLine().equals("Book A"));
         assertTrue(inFile.nextLine().equals("Author A"));
-        assertTrue(inFile.nextLine().equals("1"));
-        assertTrue(inFile.nextLine().equals("1"));
+        assertTrue(inFile.nextLine().equals(Book.AVAILABLE_CODE));
+        assertTrue(inFile.nextLine().equals(Book.RARE_BOOK_CODE));
         assertTrue(inFile.nextLine().equals("Book B"));
         assertTrue(inFile.nextLine().equals("Author B"));
-        assertTrue(inFile.nextLine().equals("0"));
-        assertTrue(inFile.nextLine().equals("0"));
+        assertTrue(inFile.nextLine().equals(Book.NOT_AVAILABLE_CODE));
+        assertTrue(inFile.nextLine().equals(Person.REGULAR_PERSON_CODE));
         assertTrue(inFile.nextLine().equals("Kim"));
         assertTrue(inFile.nextLine().equals("123456789"));
         assertTrue(inFile.nextLine().equals("abcdef@gmail.com"));
-        assertTrue(inFile.nextLine().equals("1"));
+        assertTrue(inFile.nextLine().equals(Book.RARE_BOOK_CODE));
         assertTrue(inFile.nextLine().equals("Book C"));
         assertTrue(inFile.nextLine().equals("Author C"));
-        assertTrue(inFile.nextLine().equals("0"));
-        assertTrue(inFile.nextLine().equals("1"));
+        assertTrue(inFile.nextLine().equals(Book.NOT_AVAILABLE_CODE));
+        assertTrue(inFile.nextLine().equals(Person.FRIEND_CODE));
         assertTrue(inFile.nextLine().equals("Goku"));
         assertTrue(inFile.nextLine().equals("987654321"));
         assertTrue(inFile.nextLine().equals("aaaaaa@gmail.com"));

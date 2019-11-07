@@ -10,6 +10,11 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public abstract class Book implements Loadable, Saveable {
+    public static final String REGULAR_BOOK_CODE = "Regular book";
+    public static final String RARE_BOOK_CODE = "Rare book";
+    public static final String AVAILABLE_CODE = "Available";
+    public static final String NOT_AVAILABLE_CODE = "Not available";
+
     protected String title;
     protected String author;
     protected boolean available;
@@ -89,20 +94,26 @@ public abstract class Book implements Loadable, Saveable {
     public void load(Scanner inFile) {
         title = inFile.nextLine();
         author = inFile.nextLine();
-        available = (inFile.nextLine().equals("1"));
+        available = (inFile.nextLine().equals(AVAILABLE_CODE));
+        borrower = null;
         if (!available) {
-            if (inFile.nextLine().equals("1")) {
+            if (inFile.nextLine().equals(Person.FRIEND_CODE)) {
                 borrower = new Friend();
             } else {
                 borrower = new RegularPerson();
             }
             borrower.load(inFile);
+            try {
+                borrower.borrowBook(this);
+            } catch (Exception e) {
+                System.out.println("Load did not complete successfully!");
+            }
         }
     }
 
     @Override
     public void save(FileWriter outFile) throws IOException {
-        outFile.write(title + "\n" + author + "\n" + ((available) ? "1" : "0") + "\n");
+        outFile.write(title + "\n" + author + "\n" + ((available) ? AVAILABLE_CODE : NOT_AVAILABLE_CODE) + "\n");
         if (!available) {
             borrower.save(outFile);
         }
@@ -113,7 +124,7 @@ public abstract class Book implements Loadable, Saveable {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || (!(o instanceof RegularBook) && !(o instanceof RareBook) && getClass() != o.getClass())) {
             return false;
         }
         Book book = (Book) o;

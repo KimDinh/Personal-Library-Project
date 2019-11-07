@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public abstract class Person implements Loadable, Saveable {
+    public static final String REGULAR_PERSON_CODE = "Regular person";
+    public static final String FRIEND_CODE = "Friend";
     protected String name;
     protected String phoneNumber;
     protected String email;
@@ -131,7 +133,7 @@ public abstract class Person implements Loadable, Saveable {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || (!(o instanceof RegularPerson) && !(o instanceof Friend) && getClass() != o.getClass())) {
             return false;
         }
         Person person = (Person) o;

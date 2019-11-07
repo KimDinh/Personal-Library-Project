@@ -8,6 +8,7 @@ import exceptions.NullPersonException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Library implements Loadable, Saveable {
@@ -105,25 +106,29 @@ public class Library implements Loadable, Saveable {
         return null;
     }
 
-    // EFFECTS: print all of the available books
-    public void printAvailableBooks() {
+    // EFFECTS: return a list of available books
+    public List<Book> getAvailableBooks() {
+        List<Book> ret = new ArrayList<>();
         for (Book book : availableBooks) {
-            System.out.println(book);
+            ret.add(book);
         }
+        return ret;
     }
 
-    // EFFECTS: print all of the loaned books
-    public void printLoanedBooks() {
+    // EFFECTS: return a list of loaned books
+    public List<Book> getLoanedBooks() {
+        List<Book> ret = new ArrayList<>();
         for (Book book : loanedBooks) {
-            System.out.println(book);
+            ret.add(book);
         }
+        return ret;
     }
 
     @Override
     public void load(Scanner inFile) {
         while (inFile.hasNext()) {
             Book book;
-            if (inFile.nextLine().equals("1")) {
+            if (inFile.nextLine().equals(Book.RARE_BOOK_CODE)) {
                 book = new RareBook();
             } else {
                 book = new RegularBook();

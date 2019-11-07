@@ -230,16 +230,30 @@ public class TestPerson {
         friend.save(outFile);
         outFile.close();
         inFile = new Scanner(new FileInputStream("data/testSave.txt"));
-        assertTrue(inFile.nextLine().equals("0"));
+        assertTrue(inFile.nextLine().equals(Person.REGULAR_PERSON_CODE));
         assertTrue(inFile.nextLine().equals("Kim"));
         assertTrue(inFile.nextLine().equals("123456789"));
         assertTrue(inFile.nextLine().equals("abcdef@gmail.com"));
-        assertTrue(inFile.nextLine().equals("1"));
+        assertTrue(inFile.nextLine().equals(Person.FRIEND_CODE));
         assertTrue(inFile.nextLine().equals("Goku"));
         assertTrue(inFile.nextLine().equals("987654321"));
         assertTrue(inFile.nextLine().equals("aaaaaa@gmail.com"));
         assertFalse(inFile.hasNext());
         inFile.close();
+    }
+
+    @Test
+    void testEquals() {
+        assertFalse(regularPerson.equals(null));
+        assertFalse(regularPerson.equals(book));
+        assertFalse(regularPerson.equals(friend));
+        assertTrue(regularPerson.equals(regularPerson));
+        try {
+            Person samePerson = new Friend("Kim", "111111111", "aaaaaa@gmail.com");
+            assertTrue(regularPerson.equals(samePerson));
+        } catch (Exception e) {
+            fail();
+        }
     }
 
 }

@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class RareBook extends Book {
-    private static final int MAXIMUM_LOAN_DAYS = 4;
 
     public RareBook() {}
 
@@ -24,7 +23,7 @@ public class RareBook extends Book {
 
     @Override
     public void save(FileWriter outFile) throws IOException {
-        outFile.write("1\n");
+        outFile.write(RARE_BOOK_CODE + "\n");
         super.save(outFile);
     }
 }

@@ -204,14 +204,14 @@ public class TestBook {
         rareBookB.save(outFile);
         outFile.close();
         inFile = new Scanner(new FileInputStream("data/testSave.txt"));
-        assertTrue(inFile.nextLine().equals("0"));
+        assertTrue(inFile.nextLine().equals(Book.REGULAR_BOOK_CODE));
         assertTrue(inFile.nextLine().equals("Book A"));
         assertTrue(inFile.nextLine().equals("Author A"));
-        assertTrue(inFile.nextLine().equals("1"));
-        assertTrue(inFile.nextLine().equals("1"));
+        assertTrue(inFile.nextLine().equals(Book.AVAILABLE_CODE));
+        assertTrue(inFile.nextLine().equals(Book.RARE_BOOK_CODE));
         assertTrue(inFile.nextLine().equals("Book B"));
         assertTrue(inFile.nextLine().equals("Author B"));
-        assertTrue(inFile.nextLine().equals("1"));
+        assertTrue(inFile.nextLine().equals(Book.AVAILABLE_CODE));
         assertFalse(inFile.hasNext());
         inFile.close();
     }
@@ -232,24 +232,38 @@ public class TestBook {
         rareBookB.save(outFile);
         outFile.close();
         inFile = new Scanner(new FileInputStream("data/testSave.txt"));
-        assertTrue(inFile.nextLine().equals("0"));
+        assertTrue(inFile.nextLine().equals(Book.REGULAR_BOOK_CODE));
         assertTrue(inFile.nextLine().equals("Book A"));
         assertTrue(inFile.nextLine().equals("Author A"));
-        assertTrue(inFile.nextLine().equals("0"));
-        assertTrue(inFile.nextLine().equals("0"));
+        assertTrue(inFile.nextLine().equals(Book.NOT_AVAILABLE_CODE));
+        assertTrue(inFile.nextLine().equals(Person.REGULAR_PERSON_CODE));
         assertTrue(inFile.nextLine().equals("Kim"));
         assertTrue(inFile.nextLine().equals("123456789"));
         assertTrue(inFile.nextLine().equals("abcdef@gmail.com"));
-        assertTrue(inFile.nextLine().equals("1"));
+        assertTrue(inFile.nextLine().equals(Book.RARE_BOOK_CODE));
         assertTrue(inFile.nextLine().equals("Book B"));
         assertTrue(inFile.nextLine().equals("Author B"));
-        assertTrue(inFile.nextLine().equals("0"));
-        assertTrue(inFile.nextLine().equals("1"));
+        assertTrue(inFile.nextLine().equals(Book.NOT_AVAILABLE_CODE));
+        assertTrue(inFile.nextLine().equals(Person.FRIEND_CODE));
         assertTrue(inFile.nextLine().equals("Goku"));
         assertTrue(inFile.nextLine().equals("987654321"));
         assertTrue(inFile.nextLine().equals("aaaaaa@gmail.com"));
         assertFalse(inFile.hasNext());
         inFile.close();
+    }
+
+    @Test
+    void testEquals() {
+        assertFalse(regularBookA.equals(null));
+        assertTrue(regularBookA.equals(regularBookA));
+        assertFalse(regularBookA.equals(borrower));
+        assertFalse(regularBookA.equals(rareBookB));
+        try {
+            Book anotherBookA = new RareBook("Book A", "Author");
+            assertTrue(regularBookA.equals(anotherBookA));
+        } catch (Exception e) {
+            fail();
+        }
     }
 
 }

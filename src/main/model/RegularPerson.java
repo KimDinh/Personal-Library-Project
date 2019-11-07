@@ -20,7 +20,7 @@ public class RegularPerson extends Person {
 
     @Override
     public void save(FileWriter outFile) throws IOException {
-        outFile.write("0\n");
+        outFile.write(REGULAR_PERSON_CODE + "\n");
         super.save(outFile);
     }
 }

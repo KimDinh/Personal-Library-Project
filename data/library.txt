@@ -1,16 +1,12 @@
-0
+Regular book
 Book A
 Author A
-1
-1
+Available
+Rare book
 Book B
 Author B
-1
-1
+Available
+Rare book
 Book C
 Author C
-0
-1
-Goku
-987654321
-aaaaaa@gmail.com
+Available
