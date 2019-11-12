@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Scanner;
 
@@ -13,7 +14,7 @@ public class TestLibrary {
     private Library library;
     private Book regularBookA;
     private Book rareBookB;
-    Person borrower;
+    private Person borrower;
     Scanner inFile;
     FileWriter outFile;
 
@@ -246,6 +247,8 @@ public class TestLibrary {
         assertTrue(inFile.nextLine().equals("Kim"));
         assertTrue(inFile.nextLine().equals("123456789"));
         assertTrue(inFile.nextLine().equals("abcdef@gmail.com"));
+        assertTrue(inFile.nextLine().equals(Activity.DATE_FORMAT.format(new GregorianCalendar(2019,10,11).getTime())));
+        assertTrue(inFile.nextLine().equals(Activity.DATE_FORMAT.format(new GregorianCalendar(2019,10,13).getTime())));
         assertTrue(inFile.nextLine().equals(Book.RARE_BOOK_CODE));
         assertTrue(inFile.nextLine().equals("Book C"));
         assertTrue(inFile.nextLine().equals("Author C"));
@@ -254,6 +257,8 @@ public class TestLibrary {
         assertTrue(inFile.nextLine().equals("Goku"));
         assertTrue(inFile.nextLine().equals("987654321"));
         assertTrue(inFile.nextLine().equals("aaaaaa@gmail.com"));
+        assertTrue(inFile.nextLine().equals(Activity.DATE_FORMAT.format(new GregorianCalendar(2019,10,11).getTime())));
+        assertTrue(inFile.nextLine().equals(Activity.DATE_FORMAT.format(new GregorianCalendar(2019,10,13).getTime())));
         assertFalse(inFile.hasNext());
         inFile.close();
     }

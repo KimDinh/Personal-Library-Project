@@ -7,11 +7,17 @@ import exceptions.NullPersonException;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Library implements Loadable, Saveable {
+    public static final int MAXIMUM_LOAN_DAY_REGULAR_BOOK_FOR_FRIEND = 7;
+    public static final int MAXIMUM_LOAN_DAY_REGULAR_BOOK_FOR_REGULAR_PERSON = 5;
+    public static final int MAXIMUM_LOAN_DAY_RARE_BOOK = 3;
+    public static final int OVERDUE_EXTEND_DAY = 2;
+
     private ArrayList<Book> availableBooks;
     private ArrayList<Book> loanedBooks;
     private ArrayList<Person> borrowers;
@@ -65,6 +71,7 @@ public class Library implements Loadable, Saveable {
         loanedBooks.add(book);
         borrowers.add(borrower);
         book.beLoaned(borrower);
+        NotificationCenter.notifyNewLoan(book, borrower);
     }
 
     // MODIFIES: this
@@ -82,6 +89,7 @@ public class Library implements Loadable, Saveable {
         availableBooks.add(book);
         borrowers.remove(borrower);
         book.beReturned(borrower);
+        NotificationCenter.notifyReturn(book, borrower);
     }
 
     // EFFECTS: if title matches the title of an available book,
@@ -122,6 +130,25 @@ public class Library implements Loadable, Saveable {
             ret.add(book);
         }
         return ret;
+    }
+
+    // REQUIRES: book is overdue
+    // MODIFIES: book
+    // EFFECTS: extend the loan due date for the book
+    public void extendLoan(Book book, Clock clock) {
+        book.getLoanStatus().extendDueDate(clock);
+    }
+
+    // MODIFIES: this
+    // EFFECTS: check every loaned book in this library, if it is overdue, notify borrower
+    // and extend due date, otherwise do nothing
+    public void checkAllLoan(Clock clock) {
+        for (Book book : loanedBooks) {
+            if (book.isOverdue(clock)) {
+                extendLoan(book, clock);
+                NotificationCenter.notifyOverdueAndExtend(book, book.getBorrower());
+            }
+        }
     }
 
     @Override

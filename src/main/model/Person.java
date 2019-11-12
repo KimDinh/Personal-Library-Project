@@ -108,6 +108,12 @@ public abstract class Person implements Loadable, Saveable {
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: add the message to records
+    public void updateActivity(Activity activity) {
+
+    }
+
     // EFFECTS: return a string that displays the information of this person
     @Override
     public String toString() {

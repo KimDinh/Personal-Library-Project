@@ -7,6 +7,7 @@ import exceptions.NullPersonException;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Clock;
 import java.util.Scanner;
 
 public abstract class Book implements Loadable, Saveable {
@@ -19,8 +20,12 @@ public abstract class Book implements Loadable, Saveable {
     protected String author;
     protected boolean available;
     protected Person borrower;
+    protected LoanStatus loanStatus;
 
-    public Book() {}
+    public Book() {
+        borrower = null;
+        loanStatus = null;
+    }
 
     // EFFECTS: initialize title and author of this book to the parameter passed in
     public Book(String title, String author) throws EmptyStringException {
@@ -31,6 +36,7 @@ public abstract class Book implements Loadable, Saveable {
         this.author = author;
         this.available = true;
         this.borrower = null;
+        this.loanStatus = null;
     }
 
     // EFFECTS: return the title of this book
@@ -54,6 +60,11 @@ public abstract class Book implements Loadable, Saveable {
         return borrower;
     }
 
+    // EFFECTS: return the loan status of this book
+    public LoanStatus getLoanStatus() {
+        return loanStatus;
+    }
+
     // MODIFIES: this
     // EFFECTS: change the status of this book to be loaned to borrower
     public void beLoaned(Person borrower) throws NullPersonException, BookNotAvailableException, NullBookException {
@@ -68,6 +79,7 @@ public abstract class Book implements Loadable, Saveable {
         if (borrower.getBorrowedBook() != this) {
             borrower.borrowBook(this);
         }
+        loanStatus = new LoanStatus(this, this.borrower);
     }
 
     // MODIFIES: this
@@ -84,6 +96,13 @@ public abstract class Book implements Loadable, Saveable {
         if (borrower.getBorrowedBook() == this) {
             borrower.returnBook(this);
         }
+        loanStatus = null;
+    }
+
+    // REQUIRES: this book is loaned
+    // EFFECTS: return true if this book is overdue
+    public boolean isOverdue(Clock clock) {
+        return loanStatus.isOverdue(clock);
     }
 
     // EFFECTS: return a String that displays the information of this book
@@ -95,7 +114,6 @@ public abstract class Book implements Loadable, Saveable {
         title = inFile.nextLine();
         author = inFile.nextLine();
         available = (inFile.nextLine().equals(AVAILABLE_CODE));
-        borrower = null;
         if (!available) {
             if (inFile.nextLine().equals(Person.FRIEND_CODE)) {
                 borrower = new Friend();
@@ -108,6 +126,8 @@ public abstract class Book implements Loadable, Saveable {
             } catch (Exception e) {
                 System.out.println("Load did not complete successfully!");
             }
+            loanStatus = new LoanStatus();
+            loanStatus.load(inFile);
         }
     }
 
@@ -116,6 +136,7 @@ public abstract class Book implements Loadable, Saveable {
         outFile.write(title + "\n" + author + "\n" + ((available) ? AVAILABLE_CODE : NOT_AVAILABLE_CODE) + "\n");
         if (!available) {
             borrower.save(outFile);
+            loanStatus.save(outFile);
         }
     }
 

@@ -7,6 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.time.Clock;
+import java.time.Duration;
+import java.util.GregorianCalendar;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -226,6 +229,7 @@ public class TestBook {
         assertTrue(regularBookA.getAuthor().equals("Author A"));
         assertFalse(regularBookA.isAvailable());
         assertFalse(regularBookA.getBorrower() == null);
+        assertFalse(regularBookA.getLoanStatus() == null);
 
         outFile = new FileWriter(new File("data/testSave.txt"));
         regularBookA.save(outFile);
@@ -240,6 +244,8 @@ public class TestBook {
         assertTrue(inFile.nextLine().equals("Kim"));
         assertTrue(inFile.nextLine().equals("123456789"));
         assertTrue(inFile.nextLine().equals("abcdef@gmail.com"));
+        assertTrue(inFile.nextLine().equals(Activity.DATE_FORMAT.format(new GregorianCalendar(2019,10, 11).getTime())));
+        assertTrue(inFile.nextLine().equals(Activity.DATE_FORMAT.format(new GregorianCalendar(2019,10,15).getTime())));
         assertTrue(inFile.nextLine().equals(Book.RARE_BOOK_CODE));
         assertTrue(inFile.nextLine().equals("Book B"));
         assertTrue(inFile.nextLine().equals("Author B"));
@@ -248,8 +254,24 @@ public class TestBook {
         assertTrue(inFile.nextLine().equals("Goku"));
         assertTrue(inFile.nextLine().equals("987654321"));
         assertTrue(inFile.nextLine().equals("aaaaaa@gmail.com"));
+        assertTrue(inFile.nextLine().equals(Activity.DATE_FORMAT.format(new GregorianCalendar(2019,10,11).getTime())));
+        assertTrue(inFile.nextLine().equals(Activity.DATE_FORMAT.format(new GregorianCalendar(2019,10,17).getTime())));
         assertFalse(inFile.hasNext());
         inFile.close();
+    }
+
+    @Test
+    void testIsOverdue() {
+        try {
+            regularBookA.beLoaned(borrower);
+            Clock clock = Clock.systemDefaultZone();
+            clock = Clock.offset(clock, Duration.ofDays(Library.MAXIMUM_LOAN_DAY_REGULAR_BOOK_FOR_REGULAR_PERSON-1));
+            assertFalse(regularBookA.isOverdue(clock));
+            clock = Clock.offset(clock, Duration.ofDays(1));
+            assertTrue(regularBookA.isOverdue(clock));
+        } catch (Exception e) {
+            fail();
+        }
     }
 
     @Test
