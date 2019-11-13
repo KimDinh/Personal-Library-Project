@@ -1,3 +1,8 @@
+3
+Rare book
+Book C
+Author C
+Available
 Regular book
 Book A
 Author A
@@ -5,8 +10,18 @@ Available
 Rare book
 Book B
 Author B
-Available
-Rare book
-Book C
-Author C
-Available
+Not available
+Friend
+Goku
+987654321
+aaaaaa@gmail.com
+12/11/2019
+14/11/2019
+12/11/2019
+6
+Book A has been added to the library
+Book B has been added to the library
+Book C has been added to the library
+Kim has borrowed Book A
+Goku has borrowed Book B
+Kim has returned Book A

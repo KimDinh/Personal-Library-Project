@@ -2,25 +2,35 @@ package ui;
 
 import exceptions.*;
 import model.*;
+import network.WeatherInfo;
 
 import java.io.*;
+import java.net.URL;
+import java.time.Clock;
 import java.util.*;
 
 public class Main {
     private Scanner scanner;
     private Library library;
+    private WeatherInfo weather;
 
     public Main() {
         scanner = new Scanner(System.in);
         library = new Library();
+        weather = new WeatherInfo();
     }
 
     public static void main(String[] args) throws IOException {
         Main libraryApp = new Main();
+        libraryApp.getWeatherInfo();
         libraryApp.sayHello();
         libraryApp.loadFromFile();
         libraryApp.getUserCommand();
         libraryApp.saveToFile();
+    }
+
+    private void getWeatherInfo() {
+        weather.displayWeather();
     }
 
     private void loadFromFile() throws IOException {
@@ -59,6 +69,7 @@ public class Main {
         System.out.println("[3] Return a book");
         System.out.println("[4] See all the books");
         System.out.println("[5] See a book");
+        System.out.println("[6] See activity record");
         System.out.println("[q] Quit");
     }
 
@@ -74,16 +85,36 @@ public class Main {
             printAllBooks();
         } else if (command.equals("5")) {
             findBook();
+        } else if (command.equals("6")) {
+            printActivityRecord();
         } else {
             System.out.println("You have entered an invalid command.\n");
         }
+    }
+
+    // EFFECTS: print the activity record of the library
+    private void printActivityRecord() {
+        ActivityRecord record = library.getActivityRecord();
+        Set<Calendar> dateSet = record.getSetOfDate();
+        if (dateSet.size() == 0) {
+            System.out.println("No activity has been recorded");
+            return;
+        }
+        for (Calendar date : dateSet) {
+            System.out.println(ActivityRecord.DATE_FORMAT.format(date.getTime()) + ":");
+            List<String> dateRecord = record.getActivityByDate(date);
+            for (String s : dateRecord) {
+                System.out.println("    " + s);
+            }
+        }
+        System.out.print("\n");
     }
 
     // EFFECTS: add a new book to availableBooks
     private void addBook() {
         Book newBook = getBookInfo();
         try {
-            library.addBook(newBook);
+            library.addBook(newBook, Clock.systemDefaultZone());
             System.out.println("This book has successfully been added.\n");
         } catch (NullBookException e) {
             System.out.println("No book has been specified.\n");
@@ -119,7 +150,7 @@ public class Main {
         String title = scanner.nextLine();
         Person borrower = getBorrowerInfo();
         try {
-            library.loanBook(title, borrower);
+            library.loanBook(title, borrower, Clock.systemDefaultZone());
             System.out.println("The book has successfully been loaned.\n");
         } catch (NullPersonException e) {
             System.out.println("No borrower has been specified.\n");
@@ -133,11 +164,11 @@ public class Main {
     }
 
     private void returnBook() {
-        System.out.println("Enter the book's title: ");
+        System.out.print("Enter the book's title: ");
         String title = scanner.nextLine();
         Person borrower = getBorrowerInfo();
         try {
-            library.returnBook(title, borrower);
+            library.returnBook(title, borrower, Clock.systemDefaultZone());
             System.out.println("The book has successfully been returned.\n");
         } catch (NullPersonException e) {
             System.out.println("No borrower has been specified.\n");

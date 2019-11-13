@@ -244,8 +244,8 @@ public class TestBook {
         assertTrue(inFile.nextLine().equals("Kim"));
         assertTrue(inFile.nextLine().equals("123456789"));
         assertTrue(inFile.nextLine().equals("abcdef@gmail.com"));
-        assertTrue(inFile.nextLine().equals(Activity.DATE_FORMAT.format(new GregorianCalendar(2019,10, 11).getTime())));
-        assertTrue(inFile.nextLine().equals(Activity.DATE_FORMAT.format(new GregorianCalendar(2019,10,15).getTime())));
+        assertTrue(inFile.nextLine().equals(ActivityRecord.DATE_FORMAT.format(new GregorianCalendar(2019,10, 11).getTime())));
+        assertTrue(inFile.nextLine().equals(ActivityRecord.DATE_FORMAT.format(new GregorianCalendar(2019,10,15).getTime())));
         assertTrue(inFile.nextLine().equals(Book.RARE_BOOK_CODE));
         assertTrue(inFile.nextLine().equals("Book B"));
         assertTrue(inFile.nextLine().equals("Author B"));
@@ -254,8 +254,8 @@ public class TestBook {
         assertTrue(inFile.nextLine().equals("Goku"));
         assertTrue(inFile.nextLine().equals("987654321"));
         assertTrue(inFile.nextLine().equals("aaaaaa@gmail.com"));
-        assertTrue(inFile.nextLine().equals(Activity.DATE_FORMAT.format(new GregorianCalendar(2019,10,11).getTime())));
-        assertTrue(inFile.nextLine().equals(Activity.DATE_FORMAT.format(new GregorianCalendar(2019,10,17).getTime())));
+        assertTrue(inFile.nextLine().equals(ActivityRecord.DATE_FORMAT.format(new GregorianCalendar(2019,10,11).getTime())));
+        assertTrue(inFile.nextLine().equals(ActivityRecord.DATE_FORMAT.format(new GregorianCalendar(2019,10,17).getTime())));
         assertFalse(inFile.hasNext());
         inFile.close();
     }

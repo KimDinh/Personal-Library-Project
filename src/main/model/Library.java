@@ -21,12 +21,16 @@ public class Library implements Loadable, Saveable {
     private ArrayList<Book> availableBooks;
     private ArrayList<Book> loanedBooks;
     private ArrayList<Person> borrowers;
+    private NotificationCenter notiCenter;
+    private ActivityRecord activityRecord;
 
     // EFFECTS: initialize an empty library
     public Library() {
         availableBooks = new ArrayList<>();
         loanedBooks = new ArrayList<>();
         borrowers = new ArrayList<>();
+        notiCenter = new NotificationCenter(this);
+        activityRecord = new ActivityRecord();
     }
 
     // EFFECTS: return the number of available books
@@ -46,16 +50,17 @@ public class Library implements Loadable, Saveable {
 
     // MODIFIES: this
     // EFFECTS: add newBook to availableBooks
-    public void addBook(Book newBook) throws NullBookException {
+    public void addBook(Book newBook, Clock clock) throws NullBookException {
         if (newBook == null) {
             throw new NullBookException();
         }
         availableBooks.add(newBook);
+        notiCenter.notifyNewBook(newBook, clock);
     }
 
     // MODIFIES: this
     // EFFECTS: loan the book to borrower
-    public void loanBook(String title, Person borrower) throws NullPersonException,
+    public void loanBook(String title, Person borrower, Clock clock) throws NullPersonException,
             BookNotAvailableException, NullBookException, AlreadyBorrowException {
         if (borrower == null) {
             throw new NullPersonException();
@@ -71,12 +76,12 @@ public class Library implements Loadable, Saveable {
         loanedBooks.add(book);
         borrowers.add(borrower);
         book.beLoaned(borrower);
-        NotificationCenter.notifyNewLoan(book, borrower);
+        notiCenter.notifyNewLoan(book, borrower, clock);
     }
 
     // MODIFIES: this
     // EFFECTS: move the book to availableBooks
-    public void returnBook(String title, Person borrower) throws BookNotAvailableException,
+    public void returnBook(String title, Person borrower, Clock clock) throws BookNotAvailableException,
             NullPersonException, NullBookException {
         if (borrower == null) {
             throw new NullPersonException();
@@ -89,7 +94,7 @@ public class Library implements Loadable, Saveable {
         availableBooks.add(book);
         borrowers.remove(borrower);
         book.beReturned(borrower);
-        NotificationCenter.notifyReturn(book, borrower);
+        notiCenter.notifyReturn(book, borrower, clock);
     }
 
     // EFFECTS: if title matches the title of an available book,
@@ -146,14 +151,26 @@ public class Library implements Loadable, Saveable {
         for (Book book : loanedBooks) {
             if (book.isOverdue(clock)) {
                 extendLoan(book, clock);
-                NotificationCenter.notifyOverdueAndExtend(book, book.getBorrower());
+                notiCenter.notifyOverdueAndExtend(book, book.getBorrower(), clock);
             }
         }
     }
 
+    // EFFECTS: return the activity record
+    public ActivityRecord getActivityRecord() {
+        return activityRecord;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: add the content to activityRecord
+    public void updateActivity(String content, Clock clock) {
+        activityRecord.addActivity(content, clock);
+    }
+
     @Override
     public void load(Scanner inFile) {
-        while (inFile.hasNext()) {
+        int num = Integer.parseInt(inFile.nextLine());
+        for (int i = 0; i < num; i++) {
             Book book;
             if (inFile.nextLine().equals(Book.RARE_BOOK_CODE)) {
                 book = new RareBook();
@@ -168,15 +185,18 @@ public class Library implements Loadable, Saveable {
                 borrowers.add(book.getBorrower());
             }
         }
+        activityRecord.load(inFile);
     }
 
     @Override
     public void save(FileWriter outFile) throws IOException {
+        outFile.write(numOfBooks() + "\n");
         for (Book book : availableBooks) {
             book.save(outFile);
         }
         for (Book book : loanedBooks) {
             book.save(outFile);
         }
+        activityRecord.save(outFile);
     }
 }

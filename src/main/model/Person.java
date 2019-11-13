@@ -7,6 +7,7 @@ import exceptions.NullPersonException;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Clock;
 import java.util.Scanner;
 
 public abstract class Person implements Loadable, Saveable {
@@ -16,6 +17,7 @@ public abstract class Person implements Loadable, Saveable {
     protected String phoneNumber;
     protected String email;
     protected Book borrowedBook;
+    protected ActivityRecord activityRecord;
 
     public Person() {}
 
@@ -29,6 +31,7 @@ public abstract class Person implements Loadable, Saveable {
         this.phoneNumber = phoneNumber;
         this.email = email;
         borrowedBook = null;
+        activityRecord = new ActivityRecord();
     }
 
     // EFFECTS: return the name of this person
@@ -109,9 +112,9 @@ public abstract class Person implements Loadable, Saveable {
     }
 
     // MODIFIES: this
-    // EFFECTS: add the message to records
-    public void updateActivity(Activity activity) {
-
+    // EFFECTS: add the content to activityRecord
+    public void updateActivity(String content, Clock clock) {
+        activityRecord.addActivity(content, clock);
     }
 
     // EFFECTS: return a string that displays the information of this person

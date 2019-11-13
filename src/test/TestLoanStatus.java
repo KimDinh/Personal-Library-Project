@@ -89,7 +89,7 @@ public class TestLoanStatus {
     void testExtendDueDate() {
         clock = Clock.offset(clock, Duration.ofDays(Library.MAXIMUM_LOAN_DAY_REGULAR_BOOK_FOR_REGULAR_PERSON));
         regularBookRegularPerson.extendDueDate(clock);
-        Calendar expected = Activity.getDateFromClock(clock);
+        Calendar expected = ActivityRecord.getDateFromClock(clock);
         expected.add(Calendar.DAY_OF_MONTH, Library.OVERDUE_EXTEND_DAY-1);
         assertEquals(expected, regularBookRegularPerson.getDueDate());
     }
