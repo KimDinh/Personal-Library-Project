@@ -4,21 +4,27 @@ import exceptions.*;
 import model.*;
 import network.WeatherInfo;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
-import java.net.URL;
 import java.time.Clock;
 import java.util.*;
+import java.util.List;
 
-public class Main {
+public class Main implements ActionListener {
     private Scanner scanner;
     private Library library;
     private WeatherInfo weather;
-
-    public Main() {
-        scanner = new Scanner(System.in);
-        library = new Library();
-        weather = new WeatherInfo();
-    }
+    private JFrame frame;
+    private JButton addButton;
+    private JButton loanButton;
+    private JButton returnButton;
+    private JButton printAllButton;
+    private JButton findButton;
+    private JButton printRecordButton;
 
     public static void main(String[] args) throws IOException {
         Main libraryApp = new Main();
@@ -27,6 +33,48 @@ public class Main {
         libraryApp.loadFromFile();
         libraryApp.getUserCommand();
         libraryApp.saveToFile();
+    }
+
+    public Main() {
+        scanner = new Scanner(System.in);
+        library = new Library();
+        weather = new WeatherInfo();
+        initGUI();
+    }
+
+    private void initGUI() {
+        frame = new JFrame("Your library");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setPreferredSize(new Dimension(600, 600));
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(3,2));
+        panel.setBorder(new EmptyBorder(new Insets(200,100,200,100)));
+        initButton();
+        panel.add(addButton);
+        panel.add(loanButton);
+        panel.add(returnButton);
+        panel.add(printAllButton);
+        panel.add(findButton);
+        panel.add(printRecordButton);
+        frame.add(panel);
+        frame.pack();
+        frame.setVisible(true);
+        frame.setResizable(false);
+    }
+
+    private void initButton() {
+        initButton(addButton, "Add a book", "addBook");
+        initButton(loanButton, "Loan a book", "loanBook");
+        initButton(returnButton, "Return a book", "returnBook");
+        initButton(printAllButton, "See all the books", "printAllBooks");
+        initButton(findButton, "See a book", "findBook");
+        initButton(printRecordButton, "See activity record", "printActivityRecord");
+    }
+
+    private void initButton(JButton button, String buttonLable, String actionCommand) {
+        button = new JButton(buttonLable);
+        button.setActionCommand(actionCommand);
+        button.addActionListener(this);
     }
 
     private void getWeatherInfo() {
@@ -242,5 +290,10 @@ public class Main {
             System.out.println("Name, phone number or email cannot be empty.");
             return null;
         }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
     }
 }
