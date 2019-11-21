@@ -14,28 +14,30 @@ import java.time.Clock;
 import java.util.*;
 import java.util.List;
 
-public class Main implements ActionListener {
+public class Main extends JFrame implements ActionListener {
     private Scanner scanner;
     private Library library;
     private WeatherInfo weather;
-    private JFrame frame;
-    private JButton addButton;
-    private JButton loanButton;
-    private JButton returnButton;
-    private JButton printAllButton;
-    private JButton findButton;
-    private JButton printRecordButton;
+    private JPanel panelContainer;
+    private JTextField titleField;
+    private JTextField authorField;
+    private JCheckBox rareBookCheckBox;
+    private JTextField nameField;
+    private JTextField phoneNumberField;
+    private JTextField emailField;
+    private JCheckBox friendCheckBox;
 
     public static void main(String[] args) throws IOException {
         Main libraryApp = new Main();
         libraryApp.getWeatherInfo();
         libraryApp.sayHello();
-        libraryApp.loadFromFile();
+        /*libraryApp.loadFromFile();
         libraryApp.getUserCommand();
-        libraryApp.saveToFile();
+        libraryApp.saveToFile();*/
     }
 
     public Main() {
+        super("My Library");
         scanner = new Scanner(System.in);
         library = new Library();
         weather = new WeatherInfo();
@@ -43,38 +45,80 @@ public class Main implements ActionListener {
     }
 
     private void initGUI() {
-        frame = new JFrame("Your library");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(600, 600));
-        JPanel panel = new JPanel();
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setPreferredSize(new Dimension(600, 600));
+        initPanelField();
+        panelContainer = new JPanel(new CardLayout());
+        add(panelContainer);
+        JPanel homePanel = new JPanel();
+        initHomePanel(homePanel);
+        panelContainer.add(homePanel, PanelName.HOME_PANEL.getName());
+        JPanel addBookPanel = new JPanel();
+        initAddBookPanel(addBookPanel);
+        panelContainer.add(addBookPanel, PanelName.ADD_BOOK_PANEL.getName());
+        pack();
+        showPanel("HomePanel");
+        setVisible(true);
+        setResizable(false);
+    }
+
+    private void initPanelField() {
+        titleField = new JTextField();
+        titleField.setPreferredSize(new Dimension(150, 10));
+        authorField = new JTextField();
+        authorField.setPreferredSize(new Dimension(150, 10));
+        rareBookCheckBox = new JCheckBox("YES");
+    }
+
+    private void initAddBookPanel(JPanel panel) {
+        panel.setLayout(new GridLayout(4, 1));
+        panel.setBorder(new EmptyBorder(new Insets(200,50,200,50)));
+        panel.add(getInputRow("Enter the book's title:", titleField));
+        panel.add(getInputRow("Enter the book's author:", authorField));
+        panel.add(getInputRow("Choose 'YES' if it is a rare book", rareBookCheckBox));
+        JPanel lastRow = new JPanel(new GridLayout(1, 2));
+        lastRow.add(initButton("Back", ButtonAction.BACK.getAction()));
+        lastRow.add(initButton("Enter", ButtonAction.ADD_BOOK.getAction()));
+        panel.add(lastRow);
+    }
+
+    private JPanel getInputRow(String lable, Component inputField) {
+        JPanel row = new JPanel(new GridLayout(1, 2));
+        row.add(new JLabel(lable));
+        row.add(inputField);
+        return row;
+    }
+
+    private void initHomePanel(JPanel panel) {
         panel.setLayout(new GridLayout(3,2));
         panel.setBorder(new EmptyBorder(new Insets(200,100,200,100)));
-        initButton();
-        panel.add(addButton);
-        panel.add(loanButton);
-        panel.add(returnButton);
-        panel.add(printAllButton);
-        panel.add(findButton);
-        panel.add(printRecordButton);
-        frame.add(panel);
-        frame.pack();
-        frame.setVisible(true);
-        frame.setResizable(false);
+        panel.add(initButton("Add a book", ButtonAction.SHOW_ADD_BOOK_PANEL.getAction()));
+        panel.add(initButton("Loan a book", ButtonAction.SHOW_LOAN_BOOK_PANEL.getAction()));
+        panel.add(initButton("Return a book", ButtonAction.SHOW_RETURN_BOOK_PANEL.getAction()));
+        panel.add(initButton("See all the books", ButtonAction.SHOW_PRINT_ALL_PANEL.getAction()));
+        panel.add(initButton("See a book", ButtonAction.SHOW_FIND_BOOK_PANEL.getAction()));
+        panel.add(initButton("See activity record", ButtonAction.SHOW_PRINT_RECORD_PANEL.getAction()));
     }
 
-    private void initButton() {
-        initButton(addButton, "Add a book", "addBook");
-        initButton(loanButton, "Loan a book", "loanBook");
-        initButton(returnButton, "Return a book", "returnBook");
-        initButton(printAllButton, "See all the books", "printAllBooks");
-        initButton(findButton, "See a book", "findBook");
-        initButton(printRecordButton, "See activity record", "printActivityRecord");
-    }
-
-    private void initButton(JButton button, String buttonLable, String actionCommand) {
-        button = new JButton(buttonLable);
+    private JButton initButton(String buttonLable, String actionCommand) {
+        JButton button = new JButton(buttonLable);
         button.setActionCommand(actionCommand);
         button.addActionListener(this);
+        return button;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals(ButtonAction.SHOW_ADD_BOOK_PANEL.getAction())) {
+            showPanel(PanelName.ADD_BOOK_PANEL.getName());
+        } else if (e.getActionCommand().equals(ButtonAction.BACK.getAction())) {
+            showPanel(PanelName.HOME_PANEL.getName());
+        }
+    }
+
+    private void showPanel(String panelName) {
+        CardLayout cardLayout = (CardLayout) panelContainer.getLayout();
+        cardLayout.show(panelContainer, panelName);
     }
 
     private void getWeatherInfo() {
@@ -290,10 +334,5 @@ public class Main implements ActionListener {
             System.out.println("Name, phone number or email cannot be empty.");
             return null;
         }
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
     }
 }
