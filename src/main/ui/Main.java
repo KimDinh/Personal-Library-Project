@@ -19,13 +19,11 @@ public class Main extends JFrame implements ActionListener {
     private Library library;
     private WeatherInfo weather;
     private JPanel panelContainer;
-    private JTextField titleField;
-    private JTextField authorField;
-    private JCheckBox rareBookCheckBox;
-    private JTextField nameField;
-    private JTextField phoneNumberField;
-    private JTextField emailField;
-    private JCheckBox friendCheckBox;
+    private HomePanel homePanel;
+    private AddBookPanel addBookPanel;
+    private LoanBookPanel loanBookPanel;
+    private ReturnBookPanel returnBookPanel;
+    private FindBookPanel findBookPanel;
 
     public static void main(String[] args) throws IOException {
         Main libraryApp = new Main();
@@ -47,14 +45,8 @@ public class Main extends JFrame implements ActionListener {
     private void initGUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(600, 600));
-        initPanelField();
-        panelContainer = new JPanel(new CardLayout());
+        initAllPanel();
         add(panelContainer);
-        JPanel homePanel = new JPanel();
-        initHomePanel(homePanel);
-        panelContainer.add(homePanel, PanelName.HOME_PANEL.getName());
-        JPanel addBookPanel = new JPanel();
-        initAddBookPanel(addBookPanel);
         panelContainer.add(addBookPanel, PanelName.ADD_BOOK_PANEL.getName());
         pack();
         showPanel("HomePanel");
@@ -62,56 +54,63 @@ public class Main extends JFrame implements ActionListener {
         setResizable(false);
     }
 
-    private void initPanelField() {
-        titleField = new JTextField();
-        titleField.setPreferredSize(new Dimension(150, 10));
-        authorField = new JTextField();
-        authorField.setPreferredSize(new Dimension(150, 10));
-        rareBookCheckBox = new JCheckBox("YES");
+    private void initAllPanel() {
+        panelContainer = new JPanel(new CardLayout());
+        initHomePanel();
+        panelContainer.add(homePanel, PanelName.HOME_PANEL.getName());
+        initAddBookPanel();
+        panelContainer.add(addBookPanel, PanelName.ADD_BOOK_PANEL.getName());
+        initLoanBookPanel();
+        panelContainer.add(loanBookPanel, PanelName.LOAN_BOOK_PANEL.getName());
+        initReturnBookPanel();
+        panelContainer.add(returnBookPanel, PanelName.RETURN_BOOK_PANEL.getName());
+        initFindBookPanel();
+        panelContainer.add(findBookPanel, PanelName.FIND_BOOK_PANEL.getName());
     }
 
-    private void initAddBookPanel(JPanel panel) {
-        panel.setLayout(new GridLayout(4, 1));
-        panel.setBorder(new EmptyBorder(new Insets(200,50,200,50)));
-        panel.add(getInputRow("Enter the book's title:", titleField));
-        panel.add(getInputRow("Enter the book's author:", authorField));
-        panel.add(getInputRow("Choose 'YES' if it is a rare book", rareBookCheckBox));
-        JPanel lastRow = new JPanel(new GridLayout(1, 2));
-        lastRow.add(initButton("Back", ButtonAction.BACK.getAction()));
-        lastRow.add(initButton("Enter", ButtonAction.ADD_BOOK.getAction()));
-        panel.add(lastRow);
+    private void initAddBookPanel() {
+        addBookPanel = new AddBookPanel();
+        setButtonListened(addBookPanel.getButtons());
     }
 
-    private JPanel getInputRow(String lable, Component inputField) {
-        JPanel row = new JPanel(new GridLayout(1, 2));
-        row.add(new JLabel(lable));
-        row.add(inputField);
-        return row;
+    private void initLoanBookPanel() {
+        loanBookPanel = new LoanBookPanel();
+        setButtonListened(loanBookPanel.getButtons());
     }
 
-    private void initHomePanel(JPanel panel) {
-        panel.setLayout(new GridLayout(3,2));
-        panel.setBorder(new EmptyBorder(new Insets(200,100,200,100)));
-        panel.add(initButton("Add a book", ButtonAction.SHOW_ADD_BOOK_PANEL.getAction()));
-        panel.add(initButton("Loan a book", ButtonAction.SHOW_LOAN_BOOK_PANEL.getAction()));
-        panel.add(initButton("Return a book", ButtonAction.SHOW_RETURN_BOOK_PANEL.getAction()));
-        panel.add(initButton("See all the books", ButtonAction.SHOW_PRINT_ALL_PANEL.getAction()));
-        panel.add(initButton("See a book", ButtonAction.SHOW_FIND_BOOK_PANEL.getAction()));
-        panel.add(initButton("See activity record", ButtonAction.SHOW_PRINT_RECORD_PANEL.getAction()));
+    private void initReturnBookPanel() {
+        returnBookPanel = new ReturnBookPanel();
+        setButtonListened(returnBookPanel.getButtons());
     }
 
-    private JButton initButton(String buttonLable, String actionCommand) {
-        JButton button = new JButton(buttonLable);
-        button.setActionCommand(actionCommand);
-        button.addActionListener(this);
-        return button;
+    private void initFindBookPanel() {
+        findBookPanel = new FindBookPanel();
+        setButtonListened(findBookPanel.getButtons());
+    }
+
+    private void initHomePanel() {
+        homePanel = new HomePanel();
+        setButtonListened(homePanel.getButtons());
+    }
+
+    private void setButtonListened(List<JButton> buttons) {
+        for (JButton button : buttons) {
+            button.addActionListener(this);
+        }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals(ButtonAction.SHOW_ADD_BOOK_PANEL.getAction())) {
+        String command = e.getActionCommand();
+        if (command.equals(ButtonAction.SHOW_ADD_BOOK_PANEL.getAction())) {
             showPanel(PanelName.ADD_BOOK_PANEL.getName());
-        } else if (e.getActionCommand().equals(ButtonAction.BACK.getAction())) {
+        } else if (command.equals(ButtonAction.SHOW_LOAN_BOOK_PANEL.getAction())) {
+            showPanel(PanelName.LOAN_BOOK_PANEL.getName());
+        } else if (command.equals(ButtonAction.SHOW_RETURN_BOOK_PANEL.getAction())) {
+            showPanel(PanelName.RETURN_BOOK_PANEL.getName());
+        } else if (command.equals(ButtonAction.SHOW_FIND_BOOK_PANEL.getAction())) {
+            showPanel(PanelName.FIND_BOOK_PANEL.getName());
+        } else if (command.equals(ButtonAction.BACK.getAction())) {
             showPanel(PanelName.HOME_PANEL.getName());
         }
     }
