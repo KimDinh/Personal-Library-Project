@@ -21,7 +21,7 @@ public class HomePanel extends JPanel {
         add(addBookButton = initButton("Add a book", ButtonAction.SHOW_ADD_BOOK_PANEL.getAction()));
         add(loanBookButton = initButton("Loan a book", ButtonAction.SHOW_LOAN_BOOK_PANEL.getAction()));
         add(returnBookButton = initButton("Return a book", ButtonAction.SHOW_RETURN_BOOK_PANEL.getAction()));
-        add(seeAllBookButton = initButton("See all the books", ButtonAction.SHOW_PRINT_ALL_PANEL.getAction()));
+        add(seeAllBookButton = initButton("See all the books", ButtonAction.SHOW_PRINT_ALL_BOOKS_PANEL.getAction()));
         add(findBookButton = initButton("See a book", ButtonAction.SHOW_FIND_BOOK_PANEL.getAction()));
         add(seeRecordButton = initButton("See activity record", ButtonAction.SHOW_PRINT_RECORD_PANEL.getAction()));
     }

@@ -5,7 +5,6 @@ import model.*;
 import network.WeatherInfo;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,7 +14,6 @@ import java.util.*;
 import java.util.List;
 
 public class Main extends JFrame implements ActionListener {
-    private Scanner scanner;
     private Library library;
     private WeatherInfo weather;
     private JPanel panelContainer;
@@ -24,22 +22,21 @@ public class Main extends JFrame implements ActionListener {
     private LoanBookPanel loanBookPanel;
     private ReturnBookPanel returnBookPanel;
     private FindBookPanel findBookPanel;
+    private PrintStatPanel printStatPanel;
 
     public static void main(String[] args) throws IOException {
         Main libraryApp = new Main();
         libraryApp.getWeatherInfo();
         libraryApp.sayHello();
-        /*libraryApp.loadFromFile();
-        libraryApp.getUserCommand();
-        libraryApp.saveToFile();*/
     }
 
-    public Main() {
+    public Main() throws IOException {
         super("My Library");
-        scanner = new Scanner(System.in);
         library = new Library();
         weather = new WeatherInfo();
+        loadFromFile();
         initGUI();
+        saveToFile();
     }
 
     private void initGUI() {
@@ -66,6 +63,8 @@ public class Main extends JFrame implements ActionListener {
         panelContainer.add(returnBookPanel, PanelName.RETURN_BOOK_PANEL.getName());
         initFindBookPanel();
         panelContainer.add(findBookPanel, PanelName.FIND_BOOK_PANEL.getName());
+        initPrintStatPanel();
+        panelContainer.add(printStatPanel, PanelName.PRINT_STAT_PANEL.getName());
     }
 
     private void initAddBookPanel() {
@@ -88,6 +87,11 @@ public class Main extends JFrame implements ActionListener {
         setButtonListened(findBookPanel.getButtons());
     }
 
+    private void initPrintStatPanel() {
+        printStatPanel = new PrintStatPanel();
+        setButtonListened(printStatPanel.getButtons());
+    }
+
     private void initHomePanel() {
         homePanel = new HomePanel();
         setButtonListened(homePanel.getButtons());
@@ -102,6 +106,20 @@ public class Main extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
+        if (command.equals(ButtonAction.ADD_BOOK.getAction())) {
+            addBook();
+        } else if (command.equals(ButtonAction.LOAN_BOOK.getAction())) {
+            loanBook();
+        } else if (command.equals(ButtonAction.RETURN_BOOK.getAction())) {
+            returnBook();
+        } else if (command.equals(ButtonAction.FIND_BOOK.getAction())) {
+            findBook();
+        } else {
+            changePanel(command);
+        }
+    }
+
+    private void changePanel(String command) {
         if (command.equals(ButtonAction.SHOW_ADD_BOOK_PANEL.getAction())) {
             showPanel(PanelName.ADD_BOOK_PANEL.getName());
         } else if (command.equals(ButtonAction.SHOW_LOAN_BOOK_PANEL.getAction())) {
@@ -110,9 +128,24 @@ public class Main extends JFrame implements ActionListener {
             showPanel(PanelName.RETURN_BOOK_PANEL.getName());
         } else if (command.equals(ButtonAction.SHOW_FIND_BOOK_PANEL.getAction())) {
             showPanel(PanelName.FIND_BOOK_PANEL.getName());
+        } else if (command.equals(ButtonAction.SHOW_PRINT_ALL_BOOKS_PANEL.getAction())) {
+            showPanel(PanelName.PRINT_STAT_PANEL.getName());
+            printAllBooks();
+        } else if (command.equals(ButtonAction.SHOW_PRINT_RECORD_PANEL.getAction())) {
+            showPanel(PanelName.PRINT_STAT_PANEL.getName());
+            printActivityRecord();
         } else if (command.equals(ButtonAction.BACK.getAction())) {
+            resetTextDisplay();
             showPanel(PanelName.HOME_PANEL.getName());
         }
+    }
+
+    private void resetTextDisplay() {
+        addBookPanel.getTextDisplay().setText("");
+        loanBookPanel.getTextDisplay().setText("");
+        returnBookPanel.getTextDisplay().setText("");
+        findBookPanel.getTextDisplay().setText("");
+        printStatPanel.getTextDisplay().setText("");
     }
 
     private void showPanel(String panelName) {
@@ -136,51 +169,8 @@ public class Main extends JFrame implements ActionListener {
         outFile.close();
     }
 
-    // EFFECTS: get the command from user until quit
-    private void getUserCommand() {
-        while (true) {
-            helpMenu();
-            String command = scanner.nextLine();
-            if (command.equals("q")) {
-                break;
-            }
-            processCommand(command);
-        }
-    }
-
     private void sayHello() {
         System.out.println("Hello! This is a personal library application.");
-    }
-
-    // EFFECTS: print a help menu with functionality that the user can choose
-    private void helpMenu() {
-        System.out.println("Please enter what you would like to do:");
-        System.out.println("[1] Add a book");
-        System.out.println("[2] Loan a book");
-        System.out.println("[3] Return a book");
-        System.out.println("[4] See all the books");
-        System.out.println("[5] See a book");
-        System.out.println("[6] See activity record");
-        System.out.println("[q] Quit");
-    }
-
-    // EFFECTS: call the appropriate functionality corresponding to the command passed in
-    private void processCommand(String command) {
-        if (command.equals("1")) {
-            addBook();
-        } else if (command.equals("2")) {
-            loanBook();
-        } else if (command.equals("3")) {
-            returnBook();
-        } else if (command.equals("4")) {
-            printAllBooks();
-        } else if (command.equals("5")) {
-            findBook();
-        } else if (command.equals("6")) {
-            printActivityRecord();
-        } else {
-            System.out.println("You have entered an invalid command.\n");
-        }
     }
 
     // EFFECTS: print the activity record of the library
@@ -188,150 +178,150 @@ public class Main extends JFrame implements ActionListener {
         ActivityRecord record = library.getActivityRecord();
         Set<Calendar> dateSet = record.getSetOfDate();
         if (dateSet.size() == 0) {
-            System.out.println("No activity has been recorded");
+            printStatPanel.getTextDisplay().setText("No activity has been recorded");
             return;
         }
+        String toPrint = "";
         for (Calendar date : dateSet) {
-            System.out.println(ActivityRecord.DATE_FORMAT.format(date.getTime()) + ":");
+            toPrint = toPrint + ActivityRecord.DATE_FORMAT.format(date.getTime()) + ":\n";
             List<String> dateRecord = record.getActivityByDate(date);
             for (String s : dateRecord) {
-                System.out.println("    " + s);
+                toPrint = toPrint + "    " + s + "\n";
             }
+            toPrint += "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
         }
-        System.out.print("\n");
+        printStatPanel.getTextDisplay().setText(convertToMultipline(toPrint));
     }
 
     // EFFECTS: add a new book to availableBooks
     private void addBook() {
-        Book newBook = getBookInfo();
         try {
+            Book newBook = getBookInfo(addBookPanel.getTitleField(), addBookPanel.getAuthorField(),
+                    addBookPanel.getRareBookCheckBox());
             library.addBook(newBook, Clock.systemDefaultZone());
-            System.out.println("This book has successfully been added.\n");
+            addBookPanel.getTextDisplay().setText("This book has successfully been added.");
+        } catch (EmptyStringException e) {
+            addBookPanel.getTextDisplay().setText("Title or author cannot be empty.");
         } catch (NullBookException e) {
-            System.out.println("No book has been specified.\n");
+            addBookPanel.getTextDisplay().setText("No book has been specified.");
         }
     }
 
-    // EFFECTS: return a new Book with the valid inputted info of the book;
-    // otherwise return null
-    private Book getBookInfo() {
-        System.out.print("Enter the book's title: ");
-        String title = scanner.nextLine();
-        System.out.print("Enter the book's author: ");
-        String author = scanner.nextLine();
-        System.out.print("Is it a rare book? Press 'y' for yes. Press any other key for no. ");
-        Book book = null;
-        try {
-            if (scanner.nextLine().equals("y")) {
-                book = new RareBook(title, author);
-            } else {
-                book = new RegularBook(title, author);
-            }
-        } catch (EmptyStringException e) {
-            System.out.println("Title or author cannot be empty.");
-        } finally {
-            return book;
+    private Book getBookInfo(JTextField titleField, JTextField authorField, JCheckBox rareBookCheckbox)
+            throws EmptyStringException {
+        String title = titleField.getText();
+        String author = authorField.getText();
+        boolean isRareBook = rareBookCheckbox.isSelected();
+        titleField.setText("");
+        authorField.setText("");
+        rareBookCheckbox.setSelected(false);
+        Book newBook;
+        if (isRareBook) {
+            newBook = new RareBook(title, author);
+        } else {
+            newBook = new RegularBook(title, author);
         }
+        return newBook;
     }
 
     // EFFECTS: if the inputted title matches the title of an available book,
     // get the borrower's info and loan the book; otherwise do nothing
     private void loanBook() {
-        System.out.print("Enter the book's title: ");
-        String title = scanner.nextLine();
-        Person borrower = getBorrowerInfo();
+        String title = loanBookPanel.getTitleField().getText();
+        loanBookPanel.getTitleField().setText("");
         try {
+            Person borrower = getBorrowerInfo(loanBookPanel.getNameField(), loanBookPanel.getPhoneNumberField(),
+                    loanBookPanel.getEmailField(), loanBookPanel.getFriendCheckBox());
             library.loanBook(title, borrower, Clock.systemDefaultZone());
-            System.out.println("The book has successfully been loaned.\n");
+            loanBookPanel.getTextDisplay().setText("The book has successfully been loaned.");
+        } catch (EmptyStringException e) {
+            loanBookPanel.getTextDisplay().setText("Name, phone number and email cannot be empty.");
         } catch (NullPersonException e) {
-            System.out.println("No borrower has been specified.\n");
+            loanBookPanel.getTextDisplay().setText("No borrower has been specified.");
         } catch (BookNotAvailableException e) {
-            System.out.println("This book is not available.\n");
+            loanBookPanel.getTextDisplay().setText("This book is not available.");
         } catch (NullBookException e) {
-            System.out.println("No book has been specified.\n");
+            loanBookPanel.getTextDisplay().setText("No book has been specified.");
         } catch (AlreadyBorrowException e) {
-            System.out.println("This person has already borrowed a book.\n");
+            loanBookPanel.getTextDisplay().setText("This person has already borrowed a book.");
         }
     }
 
     private void returnBook() {
-        System.out.print("Enter the book's title: ");
-        String title = scanner.nextLine();
-        Person borrower = getBorrowerInfo();
+        String title = returnBookPanel.getTitleField().getText();
+        returnBookPanel.getTitleField().setText("");
         try {
+            Person borrower = getBorrowerInfo(returnBookPanel.getNameField(), returnBookPanel.getPhoneNumberField(),
+                    returnBookPanel.getEmailField(), returnBookPanel.getFriendCheckBox());
             library.returnBook(title, borrower, Clock.systemDefaultZone());
-            System.out.println("The book has successfully been returned.\n");
+            returnBookPanel.getTextDisplay().setText("The book has successfully been returned.");
+        } catch (EmptyStringException e) {
+            returnBookPanel.getTextDisplay().setText("Name, phone number and email cannot be empty.");
         } catch (NullPersonException e) {
-            System.out.println("No borrower has been specified.\n");
+            returnBookPanel.getTextDisplay().setText("No borrower has been specified.");
         } catch (BookNotAvailableException e) {
-            System.out.println("This book cannot be returned.\n");
+            returnBookPanel.getTextDisplay().setText("This book cannot be returned.");
         } catch (NullBookException e) {
-            System.out.println("No book has been specified.\n");
+            returnBookPanel.getTextDisplay().setText("No book has been specified.");
         }
     }
 
     // EFFECTS: print the information of all the books in the library
     private void printAllBooks() {
         if (library.numOfBooks() == 0) {
-            System.out.println("There is no book in your library.\n");
+            printStatPanel.getTextDisplay().setText("There is no book in your library.");
             return;
         }
+        String toPrint = "";
         List<Book> books = library.getAvailableBooks();
         for (Book book : books) {
-            System.out.println(book);
+            toPrint = toPrint + book.toString() + "\n";
         }
         books = library.getLoanedBooks();
         for (Book book : books) {
-            System.out.println(book);
+            toPrint = toPrint + book.toString() + "\n";
         }
+        printStatPanel.getTextDisplay().setText(convertToMultipline(toPrint));
     }
 
     // EFFECTS: print all the books whose titles matches the inputted title
     private void findBook() {
-        System.out.print("Enter the book's title: ");
-        String title = scanner.nextLine();
+        String title = findBookPanel.getTitleField().getText();
+        findBookPanel.getTitleField().setText("");
         Book bookAvailable = library.findInAvailable(title);
         Book bookLoaned = library.findInLoaned(title);
         if (bookAvailable == null && bookLoaned == null) {
-            System.out.println("This book is not in the library.\n");
+            findBookPanel.getTextDisplay().setText("This book is not in the library.");
         } else if (bookAvailable != null) {
-            printBook(bookAvailable);
+            findBookPanel.getTextDisplay().setText(convertToMultipline(bookAvailable.toString()));
         } else {
-            printBook(bookLoaned);
-        }
-    }
-
-    private void printBook(Book book) {
-        System.out.println(book);
-        if (!book.isAvailable()) {
-            System.out.println("Press [1] to see borrower's info.");
-            System.out.println("Press any other key to return.");
-            String command = scanner.nextLine();
-            if (command.equals(("1"))) {
-                System.out.println(book.getBorrower());
-            }
+            findBookPanel.getTextDisplay().setText(convertToMultipline(bookLoaned.toString()
+                    + "\n\nBorrower's information:\n" + bookLoaned.getBorrower().toString()));
         }
     }
 
     // EFFECTS: return a new Person with the valid inputted info of the borrower;
     // otherwise return null
-    private Person getBorrowerInfo() {
-        System.out.print("Enter the information of the borrower:\nName: ");
-        String name = scanner.nextLine();
-        System.out.print("Phone number: ");
-        String phoneNumber = scanner.nextLine();
-        System.out.print("Email: ");
-        String email = scanner.nextLine();
-        System.out.print("Is this person a friend? Press 'y' for yes. Press any other key for no. ");
-        try {
-            if (scanner.nextLine().toLowerCase().equals("y")) {
-                return new Friend(name, phoneNumber, email);
-            } else {
-                return new RegularPerson(name, phoneNumber, email);
-            }
-        } catch (EmptyStringException e) {
-            System.out.println("Name, phone number or email cannot be empty.");
-            return null;
+    private Person getBorrowerInfo(JTextField nameField, JTextField phoneNumberField, JTextField emailField,
+                                   JCheckBox friendCheckbox) throws EmptyStringException {
+        String name = nameField.getText();
+        String phoneNumber = phoneNumberField.getText();
+        String email = emailField.getText();
+        boolean isFriend = friendCheckbox.isSelected();
+        nameField.setText("");
+        phoneNumberField.setText("");
+        emailField.setText("");
+        friendCheckbox.setSelected(false);
+        Person newPerson;
+        if (isFriend) {
+            newPerson = new Friend(name, phoneNumber, email);
+        } else {
+            newPerson = new RegularPerson(name, phoneNumber, email);
         }
+        return newPerson;
+    }
+
+    public static String convertToMultipline(String s) {
+        return "<html>" + s.replaceAll("\n", "<br>") + "</html>";
     }
 }

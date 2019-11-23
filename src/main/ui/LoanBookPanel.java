@@ -14,11 +14,12 @@ public class LoanBookPanel extends JPanel {
     public JCheckBox friendCheckBox;
     public JButton enterButton;
     public JButton backButton;
+    public JLabel textDisplay;
 
     public LoanBookPanel() {
         //setName(PanelName.LOAN_BOOK_PANEL.getName());
-        setLayout(new GridLayout(6, 1));
-        setBorder(new EmptyBorder(new Insets(150, 50, 150, 50)));
+        setLayout(new GridLayout(7, 1));
+        setBorder(new EmptyBorder(new Insets(130, 50, 130, 50)));
         titleField = new JTextField();
         nameField = new JTextField();
         phoneNumberField = new JTextField();
@@ -29,10 +30,12 @@ public class LoanBookPanel extends JPanel {
         add(AddBookPanel.getInputRow("Enter borrower's phone number:", phoneNumberField));
         add(AddBookPanel.getInputRow("Enter borrower's email:", emailField));
         add(AddBookPanel.getInputRow("Choose 'YES' if borrower is a friend", friendCheckBox));
-        JPanel lastRow = new JPanel(new GridLayout(1, 2));
-        lastRow.add(backButton = HomePanel.initButton("Back", ButtonAction.BACK.getAction()));
-        lastRow.add(enterButton = HomePanel.initButton("Enter", ButtonAction.LOAN_BOOK.getAction()));
-        add(lastRow);
+        JPanel buttonRow = new JPanel(new GridLayout(1, 2));
+        buttonRow.add(backButton = HomePanel.initButton("Back", ButtonAction.BACK.getAction()));
+        buttonRow.add(enterButton = HomePanel.initButton("Enter", ButtonAction.LOAN_BOOK.getAction()));
+        add(buttonRow);
+        textDisplay = new JLabel();
+        add(textDisplay);
     }
 
     public JTextField getTitleField() {
@@ -60,5 +63,9 @@ public class LoanBookPanel extends JPanel {
         buttons.add(enterButton);
         buttons.add(backButton);
         return buttons;
+    }
+
+    public JLabel getTextDisplay() {
+        return textDisplay;
     }
 }

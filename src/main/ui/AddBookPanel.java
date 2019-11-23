@@ -12,20 +12,23 @@ public class AddBookPanel extends JPanel {
     public JCheckBox rareBookCheckBox;
     public JButton enterButton;
     public JButton backButton;
+    public JLabel textDisplay;
 
     public AddBookPanel() {
-        setLayout(new GridLayout(4, 1));
-        setBorder(new EmptyBorder(new Insets(200,50,200,50)));
+        setLayout(new GridLayout(5, 1));
+        setBorder(new EmptyBorder(new Insets(150,50,150,50)));
         titleField = new JTextField();
         authorField = new JTextField();
         rareBookCheckBox = new JCheckBox("YES");
         add(getInputRow("Enter book's title:", titleField));
         add(getInputRow("Enter book's author:", authorField));
         add(getInputRow("Choose 'YES' if it is a rare book", rareBookCheckBox));
-        JPanel lastRow = new JPanel(new GridLayout(1, 2));
-        lastRow.add(backButton = HomePanel.initButton("Back", ButtonAction.BACK.getAction()));
-        lastRow.add(enterButton = HomePanel.initButton("Enter", ButtonAction.ADD_BOOK.getAction()));
-        add(lastRow);
+        JPanel buttonRow = new JPanel(new GridLayout(1, 2));
+        buttonRow.add(backButton = HomePanel.initButton("Back", ButtonAction.BACK.getAction()));
+        buttonRow.add(enterButton = HomePanel.initButton("Enter", ButtonAction.ADD_BOOK.getAction()));
+        add(buttonRow);
+        textDisplay = new JLabel();
+        add(textDisplay);
     }
 
     public static JPanel getInputRow(String lable, Component inputField) {
@@ -52,5 +55,9 @@ public class AddBookPanel extends JPanel {
         buttons.add(enterButton);
         buttons.add(backButton);
         return buttons;
+    }
+
+    public JLabel getTextDisplay() {
+        return textDisplay;
     }
 }
