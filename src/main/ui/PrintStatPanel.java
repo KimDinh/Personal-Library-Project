@@ -12,14 +12,14 @@ public class PrintStatPanel extends JPanel {
 
     public PrintStatPanel() {
         setLayout(new GridBagLayout());
-        setBorder(new EmptyBorder(new Insets(100, 50, 100, 50)));
+        setBorder(new EmptyBorder(new Insets(150, 50, 150, 50)));
         textDisplay = new JLabel();
         JScrollPane scrollPane = new JScrollPane(textDisplay);
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
         c.weightx = c.weighty = 1;
-        c.ipady = 150;
-        c.ipadx = 200;
+        c.ipady = 100;
+        c.ipadx = 150;
         add(scrollPane, c);
         c.anchor = GridBagConstraints.CENTER;
         c.ipadx = 50;

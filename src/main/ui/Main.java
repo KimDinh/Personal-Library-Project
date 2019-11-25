@@ -4,6 +4,7 @@ import exceptions.*;
 import model.*;
 import network.WeatherInfo;
 
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -106,6 +107,7 @@ public class Main extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
+        clickSound();
         if (command.equals(ButtonAction.ADD_BOOK.getAction())) {
             addBook();
         } else if (command.equals(ButtonAction.LOAN_BOOK.getAction())) {
@@ -188,9 +190,9 @@ public class Main extends JFrame implements ActionListener {
             for (String s : dateRecord) {
                 toPrint = toPrint + "    " + s + "\n";
             }
-            toPrint += "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+            toPrint += "\n";
         }
-        printStatPanel.getTextDisplay().setText(convertToMultipline(toPrint));
+        printStatPanel.getTextDisplay().setText(convertMultiline(toPrint));
     }
 
     // EFFECTS: add a new book to availableBooks
@@ -281,7 +283,7 @@ public class Main extends JFrame implements ActionListener {
         for (Book book : books) {
             toPrint = toPrint + book.toString() + "\n";
         }
-        printStatPanel.getTextDisplay().setText(convertToMultipline(toPrint));
+        printStatPanel.getTextDisplay().setText(convertMultiline(toPrint));
     }
 
     // EFFECTS: print all the books whose titles matches the inputted title
@@ -293,9 +295,9 @@ public class Main extends JFrame implements ActionListener {
         if (bookAvailable == null && bookLoaned == null) {
             findBookPanel.getTextDisplay().setText("This book is not in the library.");
         } else if (bookAvailable != null) {
-            findBookPanel.getTextDisplay().setText(convertToMultipline(bookAvailable.toString()));
+            findBookPanel.getTextDisplay().setText(convertMultiline(bookAvailable.toString()));
         } else {
-            findBookPanel.getTextDisplay().setText(convertToMultipline(bookLoaned.toString()
+            findBookPanel.getTextDisplay().setText(convertMultiline(bookLoaned.toString()
                     + "\n\nBorrower's information:\n" + bookLoaned.getBorrower().toString()));
         }
     }
@@ -321,7 +323,23 @@ public class Main extends JFrame implements ActionListener {
         return newPerson;
     }
 
-    public static String convertToMultipline(String s) {
+    public static String convertMultiline(String s) {
         return "<html>" + s.replaceAll("\n", "<br>") + "</html>";
+    }
+
+    private void clickSound() {
+        try {
+            File clickSoundFile = new File("data/click_sound.wav");
+            AudioInputStream audio = AudioSystem.getAudioInputStream(clickSoundFile);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audio);
+            clip.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
     }
 }

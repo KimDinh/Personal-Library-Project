@@ -18,7 +18,6 @@ public class ReturnBookPanel extends JPanel {
 
 
     public ReturnBookPanel() {
-        //setName(PanelName.RETURN_BOOK_PANEL.getName());
         setLayout(new GridLayout(7, 1));
         setBorder(new EmptyBorder(new Insets(130, 50, 130, 50)));
         titleField = new JTextField();

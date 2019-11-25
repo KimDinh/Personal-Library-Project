@@ -1,3 +1,11 @@
+/*
+https://stackoverflow.com/questions/14821952/changing-panels-using-the-card-layout
+https://docs.oracle.com/javase/tutorial/uiswing/examples/components/TextFieldDemoProject/src/components/TextFieldDemo.java
+https://docs.oracle.com/javase/tutorial/uiswing/components/scrollpane.html
+https://docs.oracle.com/javase/tutorial/uiswing/examples/layout/GridBagLayoutDemoProject/src/layout/GridBagLayoutDemo.java
+https://stackoverflow.com/questions/2152742/java-swing-multiline-labels
+*/
+
 package ui;
 
 import javax.swing.*;
@@ -15,7 +23,6 @@ public class HomePanel extends JPanel {
     public JButton seeRecordButton;
 
     public HomePanel() {
-        //setName(PanelName.HOME_PANEL.getName());
         setLayout(new GridLayout(3,2));
         setBorder(new EmptyBorder(new Insets(200,100,200,100)));
         add(addBookButton = initButton("Add a book", ButtonAction.SHOW_ADD_BOOK_PANEL.getAction()));
