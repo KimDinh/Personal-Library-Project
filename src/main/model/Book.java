@@ -65,8 +65,10 @@ public abstract class Book implements Loadable, Saveable {
         return loanStatus;
     }
 
-    // MODIFIES: this
-    // EFFECTS: change the status of this book to be loaned to borrower
+    // MODIFIES: this, borrower
+    // EFFECTS: if borrower is null, throw NullPersonException,
+    // if this book is not available, throw BookNotAvailableException,
+    // otherwise let this book be loaned to borrower
     public void beLoaned(Person borrower) throws NullPersonException, BookNotAvailableException, NullBookException {
         if (borrower == null) {
             throw new NullPersonException();
@@ -82,8 +84,10 @@ public abstract class Book implements Loadable, Saveable {
         loanStatus = new LoanStatus(this, this.borrower);
     }
 
-    // MODIFIES: this
-    // EFFECTS: change the status of this book to be returned
+    // MODIFIES: this, borrower
+    // EFFECTS: if borrower is null, throw NullPersonException,
+    // if this book is available, throw BookNotAvailableException,
+    // otherwise let this book be returned from borrower
     public void beReturned(Person borrower) throws BookNotAvailableException, NullPersonException, NullBookException {
         if (borrower == null) {
             throw new NullPersonException();
@@ -100,7 +104,7 @@ public abstract class Book implements Loadable, Saveable {
     }
 
     // REQUIRES: this book is loaned
-    // EFFECTS: return true if this book is overdue
+    // EFFECTS: return true if this book is overdue with the current date specified by clock
     public boolean isOverdue(Clock clock) {
         return loanStatus.isOverdue(clock);
     }
@@ -109,6 +113,8 @@ public abstract class Book implements Loadable, Saveable {
     @Override
     public abstract String toString();
 
+    // MODIFIES: this
+    // EFFECTS: read book's information from file
     @Override
     public void load(Scanner inFile) {
         title = inFile.nextLine();
@@ -131,6 +137,7 @@ public abstract class Book implements Loadable, Saveable {
         }
     }
 
+    // EFFECTS: save book's information to file
     @Override
     public void save(FileWriter outFile) throws IOException {
         outFile.write(title + "\n" + author + "\n" + ((available) ? AVAILABLE_CODE : NOT_AVAILABLE_CODE) + "\n");
@@ -140,6 +147,8 @@ public abstract class Book implements Loadable, Saveable {
         }
     }
 
+    // EFFECTS: return true if o is a book with the same title as this,
+    // otherwise return false
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -152,6 +161,7 @@ public abstract class Book implements Loadable, Saveable {
         return this.title.equals(book.title);
     }
 
+    // EFFECTS: return a hash code for this book
     @Override
     public int hashCode() {
         return title.hashCode();

@@ -13,6 +13,7 @@ public class RegularBook extends Book {
         super(title, author);
     }
 
+    // EFFECTS: return a String that display this book's information
     @Override
     public String toString() {
         return ("Title: " + title
@@ -20,6 +21,7 @@ public class RegularBook extends Book {
                 + "\nThis book is " + ((available) ? "available.\n" : "loaned.\n"));
     }
 
+    // EFFECTS: save this book's information to file
     @Override
     public void save(FileWriter outFile) throws IOException {
         outFile.write(REGULAR_BOOK_CODE + "\n");

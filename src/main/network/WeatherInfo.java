@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class WeatherInfo {
+    // EFFECTS: print weather's information retrieved from the url
     public void displayWeather() {
         try {
             String theURL = "https://api.openweathermap.org/data/2.5/weather?q=Vancouver,can&APPID="

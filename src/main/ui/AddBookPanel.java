@@ -31,9 +31,10 @@ public class AddBookPanel extends JPanel {
         add(textDisplay);
     }
 
-    public static JPanel getInputRow(String lable, Component inputField) {
+    // EFFECTS: return a JPanel containing instruction on the left and inputField on the right
+    public static JPanel getInputRow(String instruction, Component inputField) {
         JPanel row = new JPanel(new GridLayout(1, 2));
-        row.add(new JLabel(lable));
+        row.add(new JLabel(instruction));
         row.add(inputField);
         return row;
     }
@@ -50,14 +51,15 @@ public class AddBookPanel extends JPanel {
         return rareBookCheckBox;
     }
 
+    public JLabel getTextDisplay() {
+        return textDisplay;
+    }
+
+    // EFFECTS: return a list of buttons in AddBookPanel
     public List<JButton> getButtons() {
         List<JButton> buttons = new ArrayList<>();
         buttons.add(enterButton);
         buttons.add(backButton);
         return buttons;
-    }
-
-    public JLabel getTextDisplay() {
-        return textDisplay;
     }
 }

@@ -13,11 +13,13 @@ public class Friend extends Person {
         super(name, phoneNumber, email);
     }
 
+    // EFFECTS: return a String that displays the information of friend
     @Override
     public String toString() {
         return super.toString() + "This person is a friend.\n";
     }
 
+    // EFFECTS: save friend's information to file
     @Override
     public void save(FileWriter outFile) throws IOException {
         outFile.write(FRIEND_CODE + "\n");

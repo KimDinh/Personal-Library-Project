@@ -17,7 +17,6 @@ public class LoanBookPanel extends JPanel {
     public JLabel textDisplay;
 
     public LoanBookPanel() {
-        //setName(PanelName.LOAN_BOOK_PANEL.getName());
         setLayout(new GridLayout(7, 1));
         setBorder(new EmptyBorder(new Insets(130, 50, 130, 50)));
         titleField = new JTextField();
@@ -58,14 +57,15 @@ public class LoanBookPanel extends JPanel {
         return friendCheckBox;
     }
 
+    public JLabel getTextDisplay() {
+        return textDisplay;
+    }
+
+    // EFFECTS: return a list of buttons in LoanBookPanel
     public List<JButton> getButtons() {
         List<JButton> buttons = new ArrayList<>();
         buttons.add(enterButton);
         buttons.add(backButton);
         return buttons;
-    }
-
-    public JLabel getTextDisplay() {
-        return textDisplay;
     }
 }

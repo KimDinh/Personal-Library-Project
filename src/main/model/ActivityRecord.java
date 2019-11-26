@@ -19,6 +19,8 @@ public class ActivityRecord implements Loadable, Saveable {
         record = new TreeMap<>();
     }
 
+    // MODIFIES: this
+    // EFFECTS: add content to record using the date from clock
     public void addActivity(String content, Clock clock) {
         Calendar date = getDateFromClock(clock);
         List<String> dateRecord = record.get(date);
@@ -36,7 +38,7 @@ public class ActivityRecord implements Loadable, Saveable {
         return record.keySet();
     }
 
-    // EFFECTS: it record contains date, return the activity in given in record;
+    // EFFECTS: if record contains date, return the activity in given in record;
     // otherwise return null
     public List<String> getActivityByDate(Calendar date) {
         if (record.containsKey(date)) {
@@ -45,6 +47,8 @@ public class ActivityRecord implements Loadable, Saveable {
         return null;
     }
 
+    // MODIFIES: this
+    // EFFECTS: read record from inFile
     @Override
     public void load(Scanner inFile) {
         while (inFile.hasNext()) {
@@ -58,6 +62,7 @@ public class ActivityRecord implements Loadable, Saveable {
         }
     }
 
+    // EFFECTS: save record to file
     @Override
     public void save(FileWriter outFile) throws IOException {
         Set<Calendar> dateSet = record.keySet();

@@ -13,11 +13,13 @@ public class RegularPerson extends Person {
         super(name, phoneNumber, email);
     }
 
+    // EFFECTS: return a String that displays this person's information
     @Override
     public String toString() {
         return super.toString();
     }
 
+    // EFFECTS: save this person's information to file
     @Override
     public void save(FileWriter outFile) throws IOException {
         outFile.write(REGULAR_PERSON_CODE + "\n");

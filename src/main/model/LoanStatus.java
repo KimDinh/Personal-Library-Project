@@ -7,7 +7,6 @@ import java.util.Calendar;
 import java.util.Scanner;
 
 public class LoanStatus implements Loadable, Saveable {
-
     private Calendar loanDate;
     private Calendar dueDate;
 
@@ -41,7 +40,8 @@ public class LoanStatus implements Loadable, Saveable {
         return dueDate;
     }
 
-    // EFFECTS: return true if the loan is overdue; otherwise return false
+    // EFFECTS: return true if the loan is overdue with current date specified by clock;
+    // otherwise return false
     public boolean isOverdue(Clock clock) {
         Calendar currentDate = ActivityRecord.getDateFromClock(clock);
         return currentDate.after(dueDate);
@@ -49,18 +49,21 @@ public class LoanStatus implements Loadable, Saveable {
 
     // REQUIRES: the loan is overdue
     // MODIFIES: this
-    // EFFECTS: extends the due date to OVERDUE_EXTEND_DAY after the current date
+    // EFFECTS: extends the due date to OVERDUE_EXTEND_DAY after the date specified by clock
     public void extendDueDate(Clock clock) {
         dueDate = ActivityRecord.getDateFromClock(clock);
         dueDate.add(Calendar.DAY_OF_MONTH, Library.OVERDUE_EXTEND_DAY - 1);
     }
 
+    // MODIFIES: this
+    // EFFECTS: read LoanStatus information from file
     @Override
     public void load(Scanner inFile) {
         loanDate = ActivityRecord.parseDate(inFile.nextLine());
         dueDate = ActivityRecord.parseDate(inFile.nextLine());
     }
 
+    // EFFECTS: save LoanStatus information to file
     @Override
     public void save(FileWriter outFile) throws IOException {
         outFile.write(ActivityRecord.DATE_FORMAT.format(loanDate.getTime()) + "\n"

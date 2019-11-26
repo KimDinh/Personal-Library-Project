@@ -42,6 +42,7 @@ public class FindBookPanel extends JPanel {
         return textDisplay;
     }
 
+    // EFFECTS: return a list of buttons in FindBookPanel
     public List<JButton> getButtons() {
         List<JButton> buttons = new ArrayList<>();
         buttons.add(enterButton);

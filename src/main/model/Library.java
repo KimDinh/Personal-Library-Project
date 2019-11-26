@@ -49,7 +49,8 @@ public class Library implements Loadable, Saveable {
     }
 
     // MODIFIES: this
-    // EFFECTS: add newBook to availableBooks
+    // EFFECTS: if newBook is null, throw NullBookException,
+    // otherwise add newBook to availableBooks and record it being added at the time specified by clock
     public void addBook(Book newBook, Clock clock) throws NullBookException {
         if (newBook == null) {
             throw new NullBookException();
@@ -58,8 +59,11 @@ public class Library implements Loadable, Saveable {
         notiCenter.notifyNewBook(newBook, clock);
     }
 
-    // MODIFIES: this
-    // EFFECTS: loan the book to borrower
+    // MODIFIES: this, borrower
+    // EFFECTS: if borrower is null, throw NullPersonException,
+    // if title is not of a book in availableBooks, throw BookNotAvailableException,
+    // if borrower already borrows a book, throw AlreadyBorrowException
+    // otherwise, loan the book to borrower and record the loan at the time specified by clock
     public void loanBook(String title, Person borrower, Clock clock) throws NullPersonException,
             BookNotAvailableException, NullBookException, AlreadyBorrowException {
         if (borrower == null) {
@@ -79,8 +83,11 @@ public class Library implements Loadable, Saveable {
         notiCenter.notifyNewLoan(book, borrower, clock);
     }
 
-    // MODIFIES: this
-    // EFFECTS: move the book to availableBooks
+    // MODIFIES: this, borrower
+    // EFFECTS: if borrower is null, throw NullPersonException,
+    // if title is not of a book in loanedBooks, throw BookNotAvailableException,
+    // if book is not loaned to borrower, throw BookNotAvailableException,
+    // otherwise let the borrower return the book and record the return at the time specified by clock
     public void returnBook(String title, Person borrower, Clock clock) throws BookNotAvailableException,
             NullPersonException, NullBookException {
         if (borrower == null) {
@@ -97,8 +104,8 @@ public class Library implements Loadable, Saveable {
         notiCenter.notifyReturn(book, borrower, clock);
     }
 
-    // EFFECTS: if title matches the title of an available book,
-    // return the book; otherwise return null
+    // EFFECTS: if title matches the title of an available book, return the book;
+    // otherwise return null
     public Book findInAvailable(String title) {
         for (Book book : availableBooks) {
             if (book.getTitle().equals(title)) {
@@ -108,8 +115,8 @@ public class Library implements Loadable, Saveable {
         return null;
     }
 
-    // EFFECTS: if title matches the title of a loaned book,
-    // return the book; otherwise return null
+    // EFFECTS: if title matches the title of a loaned book, return the book;
+    // otherwise return null
     public Book findInLoaned(String title) {
         for (Book book : loanedBooks) {
             if (book.getTitle().equals(title)) {
@@ -119,7 +126,7 @@ public class Library implements Loadable, Saveable {
         return null;
     }
 
-    // EFFECTS: return a list of available books
+    // EFFECTS: return a new list of available books
     public List<Book> getAvailableBooks() {
         List<Book> ret = new ArrayList<>();
         for (Book book : availableBooks) {
@@ -128,7 +135,7 @@ public class Library implements Loadable, Saveable {
         return ret;
     }
 
-    // EFFECTS: return a list of loaned books
+    // EFFECTS: return a new list of loaned books
     public List<Book> getLoanedBooks() {
         List<Book> ret = new ArrayList<>();
         for (Book book : loanedBooks) {
@@ -145,8 +152,8 @@ public class Library implements Loadable, Saveable {
     }
 
     // MODIFIES: this
-    // EFFECTS: check every loaned book in this library, if it is overdue, notify borrower
-    // and extend due date, otherwise do nothing
+    // EFFECTS: check every loaned book in this library, if it is overdue with current date specified by clock,
+    // notify borrower and extend due date, otherwise do nothing
     public void checkAllLoan(Clock clock) {
         for (Book book : loanedBooks) {
             if (book.isOverdue(clock)) {
@@ -162,11 +169,13 @@ public class Library implements Loadable, Saveable {
     }
 
     // MODIFIES: this
-    // EFFECTS: add the content to activityRecord
+    // EFFECTS: add the content to activityRecord using the date from clock
     public void updateActivity(String content, Clock clock) {
         activityRecord.addActivity(content, clock);
     }
 
+    // MODIFIES: this
+    // EFFECTS: read library's data from file
     @Override
     public void load(Scanner inFile) {
         int num = Integer.parseInt(inFile.nextLine());
@@ -188,6 +197,7 @@ public class Library implements Loadable, Saveable {
         activityRecord.load(inFile);
     }
 
+    // EFFECTS: save library's data to file
     @Override
     public void save(FileWriter outFile) throws IOException {
         outFile.write(numOfBooks() + "\n");

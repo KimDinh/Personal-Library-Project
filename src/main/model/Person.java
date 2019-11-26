@@ -81,8 +81,10 @@ public abstract class Person implements Loadable, Saveable {
         email = newEmail;
     }
 
-    // MODIFIES: this
-    // EFFECTS: this person borrows the book
+    // MODIFIES: this, book
+    // EFFECTS: if book is null, throw NullBookException,
+    // if book is already loaned to a different person, throw BookNotAvailableException,
+    // otherwise this person borrows the book
     public void borrowBook(Book book) throws NullPersonException, BookNotAvailableException, NullBookException {
         if (book == null) {
             throw new NullBookException();
@@ -96,8 +98,10 @@ public abstract class Person implements Loadable, Saveable {
         }
     }
 
-    // MODIFIES: this
-    // EFFECTS: this person returns the borrowed book
+    // MODIFIES: this, book
+    // EFFECTS: if book is null, throw NullBookException,
+    // if book is loaned to a different person, throw BookNotAvailableException,
+    // otherwise this person returns the book
     public void returnBook(Book book) throws BookNotAvailableException, NullPersonException, NullBookException {
         if (book == null) {
             throw new NullBookException();
@@ -112,7 +116,7 @@ public abstract class Person implements Loadable, Saveable {
     }
 
     // MODIFIES: this
-    // EFFECTS: add the content to activityRecord
+    // EFFECTS: add the content to activityRecord on the date specified by clock
     public void updateActivity(String content, Clock clock) {
         activityRecord.addActivity(content, clock);
     }
@@ -125,6 +129,8 @@ public abstract class Person implements Loadable, Saveable {
                 + "\nEmail: " + email + "\n");
     }
 
+    // MODIFIES: this
+    // EFFECTS: read person's information from file
     @Override
     public void load(Scanner inFile) {
         name = inFile.nextLine();
@@ -132,11 +138,13 @@ public abstract class Person implements Loadable, Saveable {
         email = inFile.nextLine();
     }
 
+    // EFFECTS: save person's information to file
     @Override
     public void save(FileWriter outFile) throws IOException {
         outFile.write(name + "\n" + phoneNumber + "\n" + email + "\n");
     }
 
+    // return true if o is a person with the same name as this person, otherwise return false
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -149,6 +157,7 @@ public abstract class Person implements Loadable, Saveable {
         return this.name.equals(person.name);
     }
 
+    // return a hash code for this person
     @Override
     public int hashCode() {
         return name.hashCode();

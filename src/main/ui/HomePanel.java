@@ -4,6 +4,7 @@ https://docs.oracle.com/javase/tutorial/uiswing/examples/components/TextFieldDem
 https://docs.oracle.com/javase/tutorial/uiswing/components/scrollpane.html
 https://docs.oracle.com/javase/tutorial/uiswing/examples/layout/GridBagLayoutDemoProject/src/layout/GridBagLayoutDemo.java
 https://stackoverflow.com/questions/2152742/java-swing-multiline-labels
+https://www.ntu.edu.sg/home/ehchua/programming/java/J8c_PlayingSound.html
 */
 
 package ui;
@@ -33,12 +34,14 @@ public class HomePanel extends JPanel {
         add(seeRecordButton = initButton("See activity record", ButtonAction.SHOW_PRINT_RECORD_PANEL.getAction()));
     }
 
+    // EFFECTS: return a JButton named buttonLable and its command is actionCommand
     public static JButton initButton(String buttonLable, String actionCommand) {
         JButton button = new JButton(buttonLable);
         button.setActionCommand(actionCommand);
         return button;
     }
 
+    // EFFECTS: return a list of buttons in HomePanel
     public List<JButton> getButtons() {
         List<JButton> buttons = new ArrayList<>();
         buttons.add(addBookButton);

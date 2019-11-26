@@ -323,7 +323,7 @@ public class Main extends JFrame implements ActionListener {
         return newPerson;
     }
 
-    public static String convertMultiline(String s) {
+    private String convertMultiline(String s) {
         return "<html>" + s.replaceAll("\n", "<br>") + "</html>";
     }
 

@@ -33,6 +33,7 @@ public class PrintStatPanel extends JPanel {
         return textDisplay;
     }
 
+    // EFFECTS: return a list of buttons in PrintStatPanel
     public List<JButton> getButtons() {
         List<JButton> buttons = new ArrayList<>();
         buttons.add(backButton);

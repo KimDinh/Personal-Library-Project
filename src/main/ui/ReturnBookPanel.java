@@ -16,7 +16,6 @@ public class ReturnBookPanel extends JPanel {
     public JButton backButton;
     public JLabel textDisplay;
 
-
     public ReturnBookPanel() {
         setLayout(new GridLayout(7, 1));
         setBorder(new EmptyBorder(new Insets(130, 50, 130, 50)));
@@ -58,14 +57,15 @@ public class ReturnBookPanel extends JPanel {
         return friendCheckBox;
     }
 
+    public JLabel getTextDisplay() {
+        return textDisplay;
+    }
+
+    // EFFECTS: return a list of buttons in ReturnBookPanel
     public List<JButton> getButtons() {
         List<JButton> buttons = new ArrayList<>();
         buttons.add(enterButton);
         buttons.add(backButton);
         return buttons;
-    }
-
-    public JLabel getTextDisplay() {
-        return textDisplay;
     }
 }
